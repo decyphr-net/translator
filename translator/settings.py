@@ -123,3 +123,4 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
 GOOGLE_PROJECT = os.getenv('GOOGLE_PROJECT')
+BUCKET_NAME = os.getenv('BUCKET_NAME')
