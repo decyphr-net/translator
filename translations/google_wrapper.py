@@ -19,7 +19,7 @@ class GoogleMixin:
     translation_client = translate.TranslationServiceClient()
     parent = translation_client.location_path(
         settings.GOOGLE_PROJECT, "global")
-
+    
     def translate_text(self, target_language_code, text):
         """Translate Text
 
@@ -43,4 +43,4 @@ class GoogleMixin:
             target_language_code=target_language_code
         )
 
-        return response.translations[0].translated_text
+        return {"translated_text": response.translations[0].translated_text}

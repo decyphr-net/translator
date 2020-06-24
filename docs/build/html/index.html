@@ -73,9 +73,7 @@ Google and it will be return the client</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">language_code (str): A ISO 639-1 code of the target language
-text (str): The text that is needed to be translated
-translated_text (str): The translated text</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The translated text</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">JSON</p>
@@ -150,8 +148,7 @@ integrate with the relevant Google Cloud services.</p>
 <em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">PlainTextTranslationSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#PlainTextTranslationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.PlainTextTranslationSerializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plain Text Translation Serializer</p>
 <p>This serializer will be used to deserialize the incoming text and language
-code and once the the translation has been completed by Google Translate,
-the translated text will be included in the information in the response</p>
+code that will be sent to the Google Translate API</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -159,10 +156,23 @@ the translated text will be included in the information in the response</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform         Google Translate of the target language</li>
 <li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
-<li><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The translated text will only be populated once</li>
-<li><strong>translation has been performed by Google Translate</strong> (<em>the</em>) – </li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="translations.serializers.TranslatedTextSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">TranslatedTextSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#TranslatedTextSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.TranslatedTextSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The translated information that will come back from the Google Translate
+API</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The newly translated text</td>
 </tr>
 </tbody>
 </table>
