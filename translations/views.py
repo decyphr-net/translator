@@ -12,7 +12,8 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from .google_wrapper import GoogleMixin
-from .serializers import PlainTextTranslationSerializer
+from .serializers import (
+    PlainTextTranslationSerializer, TranslatedTextSerializer)
 
 
 class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
@@ -35,30 +36,26 @@ class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
             text (str): The text that is needed to be translated
         
         Returns:
-            JSON:
-                language_code (str): A ISO 639-1 code of the target language
-                text (str): The text that is needed to be translated
-                translated_text (str): The translated text
+            JSON: The translated text
         
         Example:
             curl -X POST -H 'Content-type: application/json' \
                 http://127.0.0.1:8000/api/v1/plain-text/ \
                 -d '{"language_code": "en", "text": "oi"}'
         """
-        language_code = request.data["language_code"]
-        text = request.data["text"]
+        serializer = self.serializer_class(data=request.data)
 
-        translated_text = self.translate_text(language_code, text)
-        
-        data = {
-            "language_code": language_code,
-            "text": text,
-            "translated_text": translated_text
-        }
-        
-        serializer = self.serializer_class(data=data)
-
+        # If the incoming information is valid, then we'll translate the text
+        # and return that newly created translation
         if serializer.is_valid():
-            return Response(serializer.data)
+            translated_text = self.translate_text(
+                serializer.data["language_code"], serializer.data["text"])
+            translated_text_serializer = TranslatedTextSerializer(
+                data=translated_text)
+            
+            if translated_text_serializer.is_valid():
+                return Response(translated_text_serializer.data)
+            else:
+                return Response(translated_text_serializer.errors)
         else:
             return Response(serializer.errors)

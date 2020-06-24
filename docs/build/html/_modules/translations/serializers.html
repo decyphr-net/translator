@@ -44,19 +44,35 @@
     <span class="sd">&quot;&quot;&quot;Plain Text Translation Serializer</span>
 
 <span class="sd">    This serializer will be used to deserialize the incoming text and language</span>
-<span class="sd">    code and once the the translation has been completed by Google Translate,</span>
-<span class="sd">    the translated text will be included in the information in the response</span>
+<span class="sd">    code that will be sent to the Google Translate API</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        language_code (str): A ISO 639-1 code that will be used to inform \</span>
 <span class="sd">        Google Translate of the target language</span>
 <span class="sd">        text (str): The text that is needed to be translated</span>
-<span class="sd">        translated_text (str): The translated text will only be populated once</span>
-<span class="sd">        the translation has been performed by Google Translate</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">translated_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">validate_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language_code</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;The language code provided is too short. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;The language code provided is too long. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">language_code</span></div>
+
+
+<div class="viewcode-block" id="TranslatedTextSerializer"><a class="viewcode-back" href="../../index.html#translations.views.TranslatedTextSerializer">[docs]</a><span class="k">class</span> <span class="nc">TranslatedTextSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The translated information that will come back from the Google Translate</span>
+<span class="sd">    API</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        translated_text (str): The newly translated text</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">translated_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

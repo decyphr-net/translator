@@ -46,7 +46,8 @@
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
 <span class="kn">from</span> <span class="nn">.google_wrapper</span> <span class="kn">import</span> <span class="n">GoogleMixin</span>
-<span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="n">PlainTextTranslationSerializer</span>
+<span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PlainTextTranslationSerializer</span><span class="p">,</span> <span class="n">TranslatedTextSerializer</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="PlainTextTranslator"><a class="viewcode-back" href="../../index.html#translations.views.PlainTextTranslator">[docs]</a><span class="k">class</span> <span class="nc">PlainTextTranslator</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
@@ -69,31 +70,27 @@
 <span class="sd">            text (str): The text that is needed to be translated</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            JSON:</span>
-<span class="sd">                language_code (str): A ISO 639-1 code of the target language</span>
-<span class="sd">                text (str): The text that is needed to be translated</span>
-<span class="sd">                translated_text (str): The translated text</span>
+<span class="sd">            JSON: The translated text</span>
 <span class="sd">        </span>
 <span class="sd">        Example:</span>
 <span class="sd">            curl -X POST -H &#39;Content-type: application/json&#39; \</span>
 <span class="sd">                http://127.0.0.1:8000/api/v1/plain-text/ \</span>
 <span class="sd">                -d &#39;{&quot;language_code&quot;: &quot;en&quot;, &quot;text&quot;: &quot;oi&quot;}&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">language_code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;language_code&quot;</span><span class="p">]</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
-        
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;language_code&quot;</span><span class="p">:</span> <span class="n">language_code</span><span class="p">,</span>
-            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
-            <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span>
-        <span class="p">}</span>
-        
-        <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-
+        <span class="c1"># If the incoming information is valid, then we&#39;ll translate the text</span>
+        <span class="c1"># and return that newly created translation</span>
         <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;language_code&quot;</span><span class="p">],</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+            <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">TranslatedTextSerializer</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">translated_text</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span></div></div>
 </pre></div>
