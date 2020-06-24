@@ -44,6 +44,131 @@
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
+<div class="section" id="module-translations.views">
+<span id="translations-views"></span><h1>Translations views<a class="headerlink" href="#module-translations.views" title="Permalink to this headline">¶</a></h1>
+<p>The views for the translations app.</p>
+<p>This will be the only interface that consumers of this service will
+communicate with.</p>
+<p>The purpose of this will be to act as a bridge between the decyphr application
+and the Google Translate API. Incoming text will be deserialized, translated
+and returned back the cosumer that will ultimately be returned to an end user.</p>
+<dl class="class">
+<dt id="translations.views.PlainTextTranslator">
+<em class="property">class </em><code class="descclassname">translations.views.</code><code class="descname">PlainTextTranslator</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#PlainTextTranslator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.PlainTextTranslator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The translation endpoint that will be used to translate basic text into a
+target specified target language</p>
+<dl class="method">
+<dt id="translations.views.PlainTextTranslator.create">
+<code class="descname">create</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#PlainTextTranslator.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.PlainTextTranslator.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>The endpoint that will take the incoming data and language code and
+send it to Google to be translated. The response will come back from
+Google and it will be return the client</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform             Google Translate of the target language</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">language_code (str): A ISO 639-1 code of the target language
+text (str): The text that is needed to be translated
+translated_text (str): The translated text</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">JSON</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>curl -X POST -H ‘Content-type: application/json’                 <a class="reference external" href="http://127.0.0.1:8000/api/v1/plain-text/">http://127.0.0.1:8000/api/v1/plain-text/</a>                 -d ‘{“language_code”: “en”, “text”: “oi”}’</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translations.views.PlainTextTranslator.serializer_class">
+<code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.PlainTextTranslator.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#translations.serializers.PlainTextTranslationSerializer" title="translations.serializers.PlainTextTranslationSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.PlainTextTranslationSerializer</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-translations.google_wrapper">
+<span id="translations-google-wrapper"></span><h1>Translations Google Wrapper<a class="headerlink" href="#module-translations.google_wrapper" title="Permalink to this headline">¶</a></h1>
+<p>The Google wrapper class is a mixin that will be used in all of the endpoints
+relating to the interaction with Google Cloud services.</p>
+<dl class="class">
+<dt id="translations.google_wrapper.GoogleMixin">
+<em class="property">class </em><code class="descclassname">translations.google_wrapper.</code><code class="descname">GoogleMixin</code><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Google Cloud Mixin Class</p>
+<p>This mixin will contain all of the necessary functionality required to
+integrate with the relevant Google Cloud services.</p>
+<p class="rubric">Examples</p>
+<dl class="docutils">
+<dt>In order to take advantage of this mixin, simple extended it::</dt>
+<dd>class TranslationEndpoint(viewsets.ViewSet, GoogleMixin):</dd>
+</dl>
+<dl class="method">
+<dt id="translations.google_wrapper.GoogleMixin.translate_text">
+<code class="descname">translate_text</code><span class="sig-paren">(</span><em>target_language_code</em>, <em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.translate_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.translate_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate Text</p>
+<p>The interface into Google’s Translation API.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_language_code</strong> – A ISO 639-1 code that will be used to             inform Google Translate of the target language</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The text that was returned by the Google Translate API</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tranlated text (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>translated_text = self.translate_text(language_code, text)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-translations.serializers">
+<span id="translations-serializers"></span><h1>Translations serializers<a class="headerlink" href="#module-translations.serializers" title="Permalink to this headline">¶</a></h1>
+<p>Translation Serializers.</p>
+<p>This module will contain the serializers that relate to the translation views</p>
+<dl class="class">
+<dt id="translations.serializers.PlainTextTranslationSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">PlainTextTranslationSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#PlainTextTranslationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.PlainTextTranslationSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plain Text Translation Serializer</p>
+<p>This serializer will be used to deserialize the incoming text and language
+code and once the the translation has been completed by Google Translate,
+the translated text will be included in the information in the response</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform         Google Translate of the target language</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+<li><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The translated text will only be populated once</li>
+<li><strong>translation has been performed by Google Translate</strong> (<em>the</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 
 
           </div>
@@ -56,6 +181,9 @@
   <ul>
 <li><a class="reference internal" href="#">Welcome to decypr-translator’s documentation!</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#module-translations.views">Translations views</a></li>
+<li><a class="reference internal" href="#module-translations.google_wrapper">Translations Google Wrapper</a></li>
+<li><a class="reference internal" href="#module-translations.serializers">Translations serializers</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
