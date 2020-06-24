@@ -13,21 +13,31 @@ class PlainTextTranslationSerializer(serializers.Serializer):
     code that will be sent to the Google Translate API
 
     Args:
-        language_code (str): A ISO 639-1 code that will be used to inform \
+        target_language_code (str): A ISO 639-1 code that will be used to inform \
         Google Translate of the target language
         text (str): The text that is needed to be translated
     """
-    language_code = serializers.CharField(required=True)
+    initial_language_code = serializers.CharField(required=True)
+    target_language_code = serializers.CharField(required=True)
     text = serializers.CharField(required=True)
 
-    def validate_language_code(self, language_code):
-        if len(language_code) <= 1:
+    def validate_initial_language_code(self, initial_language_code):
+        if len(initial_language_code) <= 3:
             raise serializers.ValidationError(
                 "The language code provided is too short. Please ensure the code is in ISO 639-1 format")
-        elif len(language_code) > 2:
+        elif len(initial_language_code) > 5:
             raise serializers.ValidationError(
                 "The language code provided is too long. Please ensure the code is in ISO 639-1 format")
-        return language_code
+        return initial_language_code
+
+    def validate_target_language_code(self, target_language_code):
+        if len(target_language_code) <= 1:
+            raise serializers.ValidationError(
+                "The language code provided is too short. Please ensure the code is in ISO 639-1 format")
+        elif len(target_language_code) > 2:
+            raise serializers.ValidationError(
+                "The language code provided is too long. Please ensure the code is in ISO 639-1 format")
+        return target_language_code
 
 
 class TranslatedTextSerializer(serializers.Serializer):
@@ -39,3 +49,4 @@ class TranslatedTextSerializer(serializers.Serializer):
         translated_text (str): The newly translated text
     """
     translated_text = serializers.CharField(required=True)
+    audio_location = serializers.CharField(required=True)

@@ -5,19 +5,23 @@ steps:
   env:
   - 'TRANSLATOR_SECRET_KEY=$_TRANSLATOR_SECRET_KEY'
   - 'GOOGLE_PROJECT=$_GOOGLE_PROJECT'
+  - 'BUCKET_NAME=$_BUCKET_NAME'
 - name: 'python:3.8'
   entrypoint: python3
   args: ['./manage.py', 'test', 'translations']
   env:
   - 'TRANSLATOR_SECRET_KEY=$_TRANSLATOR_SECRET_KEY'
   - 'GOOGLE_PROJECT=$_GOOGLE_PROJECT'
+  - 'BUCKET_NAME=$_BUCKET_NAME'
 - name: 'python:3.8'
   entrypoint: python3
   args: ['./manage.py', 'collectstatic', '--noinput']
 substitutions:
   _TRANSLATOR_SECRET_KEY: ''
   _GOOGLE_PROJECT: ''
+  _BUCKET_NAME: ''
 options:
     env:
     - TRANSLATOR_SECRET_KEY='$_TRANSLATOR_SECRET_KEY'
     - GOOGLE_PROJECT='$_GOOGLE_PROJECT'
+    - BUCKET_NAME='$_BUCKET_NAME'

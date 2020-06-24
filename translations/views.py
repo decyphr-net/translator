@@ -31,17 +31,20 @@ class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
         Google and it will be return the client
 
         Args:
-            language_code (str): A ISO 639-1 code that will be used to inform \
-            Google Translate of the target language
+            initial_language_code (str): A 4 character ISO 639-1 code to \
+            identify the incoming language
+            target_language_code (str): A ISO 639-1 code that will be used to \
+            inform Google Translate of the target language
             text (str): The text that is needed to be translated
         
         Returns:
-            JSON: The translated text
+            JSON: The translated text and the location of the audio file
         
         Example:
-            curl -X POST -H 'Content-type: application/json' \
+            curl -X POST -H "Content-type: application/json" \
                 http://127.0.0.1:8000/api/v1/plain-text/ \
-                -d '{"language_code": "en", "text": "oi"}'
+                -d '{"initial_language_code": "pt-BR", \
+                     "target_language_code": "en", "text": "oi"}'
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -49,9 +52,19 @@ class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
         # and return that newly created translation
         if serializer.is_valid():
             translated_text = self.translate_text(
-                serializer.data["language_code"], serializer.data["text"])
+                serializer.data["target_language_code"],
+                serializer.data["text"])
+            audio_location = self.text_to_speech(
+                serializer.data["text"],
+                serializer.data["initial_language_code"])
+            
+            translated_data = {
+                "translated_text": translated_text,
+                "audio_location": audio_location
+            }
+
             translated_text_serializer = TranslatedTextSerializer(
-                data=translated_text)
+                data=translated_data)
             
             if translated_text_serializer.is_valid():
                 return Response(translated_text_serializer.data)

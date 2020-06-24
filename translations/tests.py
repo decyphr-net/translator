@@ -15,7 +15,8 @@ class PlainTextTranslatorTestCase(APITestCase):
         url = reverse("translator-list")
 
         data = {
-            "language_code": "pt",
+            "initial_language_code": "en-US",
+            "target_language_code": "pt",
             "text": "hello, how are you?"
         }
         response = self.client.post(url, data)
@@ -29,25 +30,43 @@ class PlainTextTranslatorTestCase(APITestCase):
         url = reverse("translator-list")
 
         data = {
-            "language_code": "pt",
+            "initial_language_code": "en-US",
+            "target_language_code": "pt",
             "text": "hello, how are you?"
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         self.assertIn("translated_text", response.data)
     
-    def test_error_is_thrown_if_the_language_code_is_not_provided(self):
+    def test_that_the_audio_location_is_provided(self):
+        """
+        After the call to the API has been, and everything was successful, the
+        translated text is returned
+        """
+        url = reverse("translator-list")
+
+        data = {
+            "initial_language_code": "en-US",
+            "target_language_code": "pt",
+            "text": "hello, how are you?"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("audio_location", response.data)
+    
+    def test_error_is_thrown_if_the_initial_language_code_is_not_provided(self):
         """
         If a language code is not present in the post data then an error
         message will be returned to the client
         """
         url = reverse("translator-list")
         data = {
+            "target_language_code": "pt",
             "text": "hello, how are you?"
         }
         response = self.client.post(url, data)
         self.assertEqual(
-            response.data["language_code"][0], "This field is required.")
+            response.data["initial_language_code"][0], "This field is required.")
     
     def test_error_is_thrown_if_the_language_code_is_too_short(self):
         """
@@ -55,12 +74,13 @@ class PlainTextTranslatorTestCase(APITestCase):
         """
         url = reverse("translator-list")
         data = {
-            "language_code": "p",
+            "initial_language_code": "e",
+            "target_language_code": "pt",
             "text": "hello, how are you?"
         }
         response = self.client.post(url, data)
         self.assertEqual(
-            response.data["language_code"][0],
+            response.data["initial_language_code"][0],
             "The language code provided is too short. Please ensure the code is in ISO 639-1 format")
     
     def test_error_is_thrown_if_the_language_code_is_too_long(self):
@@ -69,10 +89,55 @@ class PlainTextTranslatorTestCase(APITestCase):
         """
         url = reverse("translator-list")
         data = {
-            "language_code": "pt-BR",
+            "initial_language_code": "en-GBs",
+            "target_language_code": "pt",
             "text": "hello, how are you?"
         }
         response = self.client.post(url, data)
         self.assertEqual(
-            response.data["language_code"][0],
+            response.data["initial_language_code"][0],
+            "The language code provided is too long. Please ensure the code is in ISO 639-1 format")
+    
+    def test_error_is_thrown_if_the_target_language_code_is_not_provided(self):
+        """
+        If a language code is not present in the post data then an error
+        message will be returned to the client
+        """
+        url = reverse("translator-list")
+        data = {
+            "initial_language_code": "en-GB",
+            "text": "hello, how are you?"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.data["target_language_code"][0], "This field is required.")
+    
+    def test_error_is_thrown_if_the_target_language_code_is_too_short(self):
+        """
+        If a language code is too short an error will be thrown
+        """
+        url = reverse("translator-list")
+        data = {
+            "initial_language_code": "en-GB",
+            "target_language_code": "p",
+            "text": "hello, how are you?"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.data["target_language_code"][0],
+            "The language code provided is too short. Please ensure the code is in ISO 639-1 format")
+    
+    def test_error_is_thrown_if_the_target_language_code_is_too_long(self):
+        """
+        If a language code is too long an error will be thrown
+        """
+        url = reverse("translator-list")
+        data = {
+            "initial_language_code": "en-GB",
+            "target_language_code": "pt-BR",
+            "text": "hello, how are you?"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.data["target_language_code"][0],
             "The language code provided is too long. Please ensure the code is in ISO 639-1 format")
