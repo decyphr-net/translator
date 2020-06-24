@@ -14,7 +14,7 @@ class PlainTextTranslationSerializer(serializers.Serializer):
     the translated text will be included in the information in the response
 
     Args:
-        language_code (str): A ISO 639-1 code that will be used to inform
+        language_code (str): A ISO 639-1 code that will be used to inform \
         Google Translate of the target language
         text (str): The text that is needed to be translated
         translated_text (str): The translated text will only be populated once

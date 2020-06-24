@@ -18,3 +18,18 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Translations views
+==================
+.. automodule:: translations.views
+   :members:
+
+Translations Google Wrapper
+===========================
+.. automodule:: translations.google_wrapper
+   :members:
+
+Translations serializers
+========================
+.. automodule:: translations.serializers
+   :members:
