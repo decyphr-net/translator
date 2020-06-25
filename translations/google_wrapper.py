@@ -3,10 +3,15 @@ The Google wrapper class is a mixin that will be used in all of the endpoints
 relating to the interaction with Google Cloud services.
 """
 import uuid
+import json
 from django.conf import settings
 from google.cloud import translate
 from google.cloud import texttospeech
 from google.cloud import storage
+from google.cloud import language
+from google.cloud.language import enums
+from google.cloud.language import types
+from google.protobuf.json_format import MessageToJson
 
 
 class GoogleMixin:
@@ -21,6 +26,7 @@ class GoogleMixin:
     """
     translation_client = translate.TranslationServiceClient()
     text_to_speech_client = texttospeech.TextToSpeechClient()
+    natural_language_client = language.LanguageServiceClient()
     storage_client = storage.Client()
     bucket = storage_client.bucket(settings.BUCKET_NAME)
     
@@ -101,3 +107,14 @@ class GoogleMixin:
                 "audio_config": audio_config}
         )        
         return self.upload_to_bucket(response.audio_content)
+    
+    def parse_text(self, text):
+        """
+        Parse the text from the original language
+        """
+        type_ = enums.Document.Type.PLAIN_TEXT
+        document = {"content": text, "type": type_}
+        encoding_type = enums.EncodingType.UTF8
+        response = self.natural_language_client.analyze_syntax(
+            document, encoding_type=encoding_type)
+        return MessageToJson(response)

@@ -50,3 +50,4 @@ class TranslatedTextSerializer(serializers.Serializer):
     """
     translated_text = serializers.CharField(required=True)
     audio_location = serializers.CharField(required=True)
+    analyzed_text = serializers.JSONField()

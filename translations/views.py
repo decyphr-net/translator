@@ -57,12 +57,13 @@ class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
             audio_location = self.text_to_speech(
                 serializer.data["text"],
                 serializer.data["initial_language_code"])
+            analyzed_text = self.parse_text(serializer.data["text"])
             
             translated_data = {
                 "translated_text": translated_text,
-                "audio_location": audio_location
+                "audio_location": audio_location,
+                "analyzed_text": analyzed_text
             }
-
             translated_text_serializer = TranslatedTextSerializer(
                 data=translated_data)
             
