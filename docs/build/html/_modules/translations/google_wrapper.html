@@ -36,8 +36,15 @@
 <span class="sd">The Google wrapper class is a mixin that will be used in all of the endpoints</span>
 <span class="sd">relating to the interaction with Google Cloud services.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">translate</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">texttospeech</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">language</span>
+<span class="kn">from</span> <span class="nn">google.cloud.language</span> <span class="kn">import</span> <span class="n">enums</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToJson</span>
 
 
 <div class="viewcode-block" id="GoogleMixin"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin">[docs]</a><span class="k">class</span> <span class="nc">GoogleMixin</span><span class="p">:</span>
@@ -46,14 +53,45 @@
 <span class="sd">    This mixin will contain all of the necessary functionality required to</span>
 <span class="sd">    integrate with the relevant Google Cloud services.</span>
 
+<span class="sd">    The purpose of this mixin is to provide an interface into the Google Cloud</span>
+<span class="sd">    API in a single class. An class extending this class will be able to</span>
+<span class="sd">    upload files to Google Storage, translate text using Cloud Translate,</span>
+<span class="sd">    convert text to speech and analyze the structure of a piece of text.</span>
+
 <span class="sd">    Examples:</span>
 <span class="sd">        In order to take advantage of this mixin, simple extended it::</span>
 <span class="sd">            class TranslationEndpoint(viewsets.ViewSet, GoogleMixin):</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">translation_client</span> <span class="o">=</span> <span class="n">translate</span><span class="o">.</span><span class="n">TranslationServiceClient</span><span class="p">()</span>
+    <span class="n">text_to_speech_client</span> <span class="o">=</span> <span class="n">texttospeech</span><span class="o">.</span><span class="n">TextToSpeechClient</span><span class="p">()</span>
+    <span class="n">natural_language_client</span> <span class="o">=</span> <span class="n">language</span><span class="o">.</span><span class="n">LanguageServiceClient</span><span class="p">()</span>
+    <span class="n">storage_client</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">storage_client</span><span class="o">.</span><span class="n">bucket</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BUCKET_NAME</span><span class="p">)</span>
+    
     <span class="n">parent</span> <span class="o">=</span> <span class="n">translation_client</span><span class="o">.</span><span class="n">location_path</span><span class="p">(</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">GOOGLE_PROJECT</span><span class="p">,</span> <span class="s2">&quot;global&quot;</span><span class="p">)</span>
     
+<div class="viewcode-block" id="GoogleMixin.upload_to_bucket"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin.upload_to_bucket">[docs]</a>    <span class="k">def</span> <span class="nf">upload_to_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">audio_content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload audio to Storage</span>
+
+<span class="sd">        Upload audio file to Cloud Storage. Files name don&#39;t need to contain</span>
+<span class="sd">        any specific information, but do need to be unique so we&#39;ll generate</span>
+<span class="sd">        a UUID for each new file being created</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            audio_content (str): The string of information that gets returned \</span>
+<span class="sd">            from the text to speech API</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The path to the newly generated file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">blob_name</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+        <span class="n">blob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="o">.</span><span class="n">blob</span><span class="p">(</span><span class="n">blob_name</span><span class="p">)</span>
+        <span class="n">blob</span><span class="o">.</span><span class="n">upload_from_string</span><span class="p">(</span><span class="n">audio_content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;https://storage.cloud.google.com/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">blob_name</span><span class="p">)</span></div>
+        
+        
 <div class="viewcode-block" id="GoogleMixin.translate_text"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin.translate_text">[docs]</a>    <span class="k">def</span> <span class="nf">translate_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_language_code</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Translate Text</span>
 
@@ -65,7 +103,8 @@
 <span class="sd">            text (str): The text that is needed to be translated</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            Tranlated text (str): The text that was returned by the Google Translate API</span>
+<span class="sd">            translated_text (str): The text that was returned by the \</span>
+<span class="sd">            Google Translate API</span>
 <span class="sd">        </span>
 <span class="sd">        Examples:</span>
 <span class="sd">            translated_text = self.translate_text(language_code, text)</span>
@@ -77,7 +116,54 @@
             <span class="n">target_language_code</span><span class="o">=</span><span class="n">target_language_code</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">translations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">translated_text</span><span class="p">}</span></div></div>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">translations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">translated_text</span></div>
+    
+<div class="viewcode-block" id="GoogleMixin.text_to_speech"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin.text_to_speech">[docs]</a>    <span class="k">def</span> <span class="nf">text_to_speech</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s2">&quot;en-US&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Text to Speech</span>
+
+<span class="sd">        Convert the text into an audio file for users to be able to hear</span>
+<span class="sd">        samples of the text in the intended language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be converted to audio</span>
+<span class="sd">            language_code (str): The full language code for the target language</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            location (str): The path to the location of the audio file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">input_text</span> <span class="o">=</span> <span class="n">texttospeech</span><span class="o">.</span><span class="n">SynthesisInput</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">voice</span> <span class="o">=</span> <span class="n">texttospeech</span><span class="o">.</span><span class="n">VoiceSelectionParams</span><span class="p">(</span>
+            <span class="n">language_code</span><span class="o">=</span><span class="n">language_code</span>
+        <span class="p">)</span>
+        <span class="n">audio_config</span> <span class="o">=</span> <span class="n">texttospeech</span><span class="o">.</span><span class="n">AudioConfig</span><span class="p">(</span>
+            <span class="n">audio_encoding</span><span class="o">=</span><span class="n">texttospeech</span><span class="o">.</span><span class="n">AudioEncoding</span><span class="o">.</span><span class="n">MP3</span>
+        <span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_to_speech_client</span><span class="o">.</span><span class="n">synthesize_speech</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_text</span><span class="p">,</span>
+                <span class="s2">&quot;voice&quot;</span><span class="p">:</span> <span class="n">voice</span><span class="p">,</span>
+                <span class="s2">&quot;audio_config&quot;</span><span class="p">:</span> <span class="n">audio_config</span>
+            <span class="p">}</span>
+        <span class="p">)</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_to_bucket</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">audio_content</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="GoogleMixin.parse_text"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin.parse_text">[docs]</a>    <span class="k">def</span> <span class="nf">parse_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the text from the original language to determine what types of</span>
+<span class="sd">        words the text is comprised of</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be analyzed</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            JSON: The JSON data that is returned from the Natural Language API</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">type_</span> <span class="o">=</span> <span class="n">enums</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">PLAIN_TEXT</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">type_</span><span class="p">}</span>
+        <span class="n">encoding_type</span> <span class="o">=</span> <span class="n">enums</span><span class="o">.</span><span class="n">EncodingType</span><span class="o">.</span><span class="n">UTF8</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">natural_language_client</span><span class="o">.</span><span class="n">analyze_syntax</span><span class="p">(</span>
+            <span class="n">document</span><span class="p">,</span> <span class="n">encoding_type</span><span class="o">=</span><span class="n">encoding_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MessageToJson</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

@@ -68,12 +68,13 @@ Google and it will be return the client</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform             Google Translate of the target language</li>
+<li><strong>initial_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 4 character ISO 639-1 code to             identify the incoming language</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to             inform Google Translate of the target language</li>
 <li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The translated text</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The translated text and the location of the audio file</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">JSON</p>
@@ -82,7 +83,7 @@ Google and it will be return the client</p>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>curl -X POST -H ‘Content-type: application/json’                 <a class="reference external" href="http://127.0.0.1:8000/api/v1/plain-text/">http://127.0.0.1:8000/api/v1/plain-text/</a>                 -d ‘{“language_code”: “en”, “text”: “oi”}’</p>
+<p>curl -X POST -H “Content-type: application/json”                 <a class="reference external" href="http://127.0.0.1:8000/api/v1/plain-text/">http://127.0.0.1:8000/api/v1/plain-text/</a>                 -d ‘{“initial_language_code”: “pt-BR”,                      “target_language_code”: “en”, “text”: “oi”}’</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -104,11 +105,60 @@ relating to the interaction with Google Cloud services.</p>
 <dd><p>Google Cloud Mixin Class</p>
 <p>This mixin will contain all of the necessary functionality required to
 integrate with the relevant Google Cloud services.</p>
+<p>The purpose of this mixin is to provide an interface into the Google Cloud
+API in a single class. An class extending this class will be able to
+upload files to Google Storage, translate text using Cloud Translate,
+convert text to speech and analyze the structure of a piece of text.</p>
 <p class="rubric">Examples</p>
 <dl class="docutils">
 <dt>In order to take advantage of this mixin, simple extended it::</dt>
 <dd>class TranslationEndpoint(viewsets.ViewSet, GoogleMixin):</dd>
 </dl>
+<dl class="method">
+<dt id="translations.google_wrapper.GoogleMixin.parse_text">
+<code class="descname">parse_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.parse_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.parse_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the text from the original language to determine what types of
+words the text is comprised of</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text to be analyzed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The JSON data that is returned from the Natural Language API</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">JSON</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translations.google_wrapper.GoogleMixin.text_to_speech">
+<code class="descname">text_to_speech</code><span class="sig-paren">(</span><em>text</em>, <em>language_code='en-US'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.text_to_speech"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.text_to_speech" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text to Speech</p>
+<p>Convert the text into an audio file for users to be able to hear
+samples of the text in the intended language.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text to be converted to audio</li>
+<li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The full language code for the target language</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The path to the location of the audio file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">location (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="translations.google_wrapper.GoogleMixin.translate_text">
 <code class="descname">translate_text</code><span class="sig-paren">(</span><em>target_language_code</em>, <em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.translate_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.translate_text" title="Permalink to this definition">¶</a></dt>
@@ -124,16 +174,37 @@ integrate with the relevant Google Cloud services.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The text that was returned by the Google Translate API</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The text that was returned by the             Google Translate API</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tranlated text (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">translated_text (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
 <p>translated_text = self.translate_text(language_code, text)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translations.google_wrapper.GoogleMixin.upload_to_bucket">
+<code class="descname">upload_to_bucket</code><span class="sig-paren">(</span><em>audio_content</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.upload_to_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.upload_to_bucket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload audio to Storage</p>
+<p>Upload audio file to Cloud Storage. Files name don’t need to contain
+any specific information, but do need to be unique so we’ll generate
+a UUID for each new file being created</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>audio_content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string of information that gets returned             from the text to speech API</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The path to the newly generated file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -154,7 +225,7 @@ code that will be sent to the Google Translate API</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform         Google Translate of the target language</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform         Google Translate of the target language</li>
 <li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
 </ul>
 </td>

@@ -65,17 +65,20 @@
 <span class="sd">        Google and it will be return the client</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            language_code (str): A ISO 639-1 code that will be used to inform \</span>
-<span class="sd">            Google Translate of the target language</span>
+<span class="sd">            initial_language_code (str): A 4 character ISO 639-1 code to \</span>
+<span class="sd">            identify the incoming language</span>
+<span class="sd">            target_language_code (str): A ISO 639-1 code that will be used to \</span>
+<span class="sd">            inform Google Translate of the target language</span>
 <span class="sd">            text (str): The text that is needed to be translated</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            JSON: The translated text</span>
+<span class="sd">            JSON: The translated text and the location of the audio file</span>
 <span class="sd">        </span>
 <span class="sd">        Example:</span>
-<span class="sd">            curl -X POST -H &#39;Content-type: application/json&#39; \</span>
+<span class="sd">            curl -X POST -H &quot;Content-type: application/json&quot; \</span>
 <span class="sd">                http://127.0.0.1:8000/api/v1/plain-text/ \</span>
-<span class="sd">                -d &#39;{&quot;language_code&quot;: &quot;en&quot;, &quot;text&quot;: &quot;oi&quot;}&#39;</span>
+<span class="sd">                -d &#39;{&quot;initial_language_code&quot;: &quot;pt-BR&quot;, \</span>
+<span class="sd">                     &quot;target_language_code&quot;: &quot;en&quot;, &quot;text&quot;: &quot;oi&quot;}&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
@@ -83,9 +86,20 @@
         <span class="c1"># and return that newly created translation</span>
         <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
             <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span>
-                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;language_code&quot;</span><span class="p">],</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_language_code&quot;</span><span class="p">],</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+            <span class="n">audio_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_to_speech</span><span class="p">(</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initial_language_code&quot;</span><span class="p">])</span>
+            <span class="n">analyzed_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_text</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+            
+            <span class="n">translated_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span><span class="p">,</span>
+                <span class="s2">&quot;audio_location&quot;</span><span class="p">:</span> <span class="n">audio_location</span><span class="p">,</span>
+                <span class="s2">&quot;analyzed_text&quot;</span><span class="p">:</span> <span class="n">analyzed_text</span>
+            <span class="p">}</span>
             <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">TranslatedTextSerializer</span><span class="p">(</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">translated_text</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
             
             <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>

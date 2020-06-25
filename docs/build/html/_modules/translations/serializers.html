@@ -47,21 +47,31 @@
 <span class="sd">    code that will be sent to the Google Translate API</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        language_code (str): A ISO 639-1 code that will be used to inform \</span>
+<span class="sd">        target_language_code (str): A ISO 639-1 code that will be used to inform \</span>
 <span class="sd">        Google Translate of the target language</span>
 <span class="sd">        text (str): The text that is needed to be translated</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">initial_language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">target_language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">validate_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language_code</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">validate_initial_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_language_code</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
                 <span class="s2">&quot;The language code provided is too short. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
                 <span class="s2">&quot;The language code provided is too long. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">language_code</span></div>
+        <span class="k">return</span> <span class="n">initial_language_code</span>
+
+    <span class="k">def</span> <span class="nf">validate_target_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_language_code</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;The language code provided is too short. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;The language code provided is too long. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target_language_code</span></div>
 
 
 <div class="viewcode-block" id="TranslatedTextSerializer"><a class="viewcode-back" href="../../index.html#translations.views.TranslatedTextSerializer">[docs]</a><span class="k">class</span> <span class="nc">TranslatedTextSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
@@ -72,7 +82,9 @@
 <span class="sd">    Args:</span>
 <span class="sd">        translated_text (str): The newly translated text</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">translated_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="n">translated_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">audio_location</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">analyzed_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">JSONField</span><span class="p">()</span></div>
 </pre></div>
 
           </div>
