@@ -41,7 +41,7 @@ class PlainTextTranslatorTestCase(APITestCase):
     def test_that_the_audio_location_is_provided(self):
         """
         After the call to the API has been, and everything was successful, the
-        translated text is returned
+        location to the audio file is returned
         """
         url = reverse("translator-list")
 
@@ -53,6 +53,22 @@ class PlainTextTranslatorTestCase(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
         self.assertIn("audio_location", response.data)
+
+    def test_that_the_analyzed_text_is_provided(self):
+        """
+        After the call to the API has been, and everything was successful, the
+        analyzeded text is returned
+        """
+        url = reverse("translator-list")
+
+        data = {
+            "initial_language_code": "en-US",
+            "target_language_code": "pt",
+            "text": "hello, how are you?"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("analyzed_text", response.data)
     
     def test_error_is_thrown_if_the_initial_language_code_is_not_provided(self):
         """
