@@ -10,7 +10,6 @@ from google.cloud import texttospeech
 from google.cloud import storage
 from google.cloud import language
 from google.cloud.language import enums
-from google.cloud.language import types
 from google.protobuf.json_format import MessageToJson
 
 
@@ -19,6 +18,11 @@ class GoogleMixin:
 
     This mixin will contain all of the necessary functionality required to
     integrate with the relevant Google Cloud services.
+
+    The purpose of this mixin is to provide an interface into the Google Cloud
+    API in a single class. An class extending this class will be able to
+    upload files to Google Storage, translate text using Cloud Translate,
+    convert text to speech and analyze the structure of a piece of text.
 
     Examples:
         In order to take advantage of this mixin, simple extended it::
@@ -104,13 +108,21 @@ class GoogleMixin:
             request={
                 "input": input_text,
                 "voice": voice,
-                "audio_config": audio_config}
+                "audio_config": audio_config
+            }
         )        
         return self.upload_to_bucket(response.audio_content)
     
     def parse_text(self, text):
         """
-        Parse the text from the original language
+        Parse the text from the original language to determine what types of
+        words the text is comprised of
+
+        Args:
+            text (str): The text to be analyzed
+        
+        Returns:
+            JSON: The JSON data that is returned from the Natural Language API
         """
         type_ = enums.Document.Type.PLAIN_TEXT
         document = {"content": text, "type": type_}
