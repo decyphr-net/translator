@@ -4,3 +4,6 @@ Throughout the Decyphr ecosystem there will be various forms of translations so 
 
 ## Goals
 This service will translate the text coming in from the users, but it will also be used as a general usage API that may be used to translate images, or translation files apps.
+
+### Endpoints
+The endpoints for this API are:
