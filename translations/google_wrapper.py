@@ -130,3 +130,66 @@ class GoogleMixin:
         response = self.natural_language_client.analyze_syntax(
             document, encoding_type=encoding_type)
         return MessageToJson(response)
+    
+    def bundle_full_translation_response(self, serializer):
+        """Bundle up the response data for full translations
+
+        Bundle up the information the information coming in from the client
+        and transform it into the output that the client is expecting.
+
+        Args:
+            serializer (FullTranslationSerializer): Containing the target
+            language code, initial langauge code and the text that is to be
+            translated
+        
+        Returns:
+            FullTranslatedSerializer or errors
+        """
+        translated_text = self.translate_text(
+            serializer.data["target_language_code"],
+            serializer.data["text"])
+        audio_location = self.text_to_speech(
+            serializer.data["text"],
+            serializer.data["initial_language_code"])
+        analyzed_text = self.parse_text(serializer.data["text"])
+        
+        translated_data = {
+            "translated_text": translated_text,
+            "audio_location": audio_location,
+            "analyzed_text": analyzed_text
+        }
+        translated_text_serializer = self.output_serializer(
+            data=translated_data)
+
+        if translated_text_serializer.is_valid():
+            return translated_text_serializer.data
+        else:
+            return translated_text_serializer.errors
+    
+    def bundle_text_translation_response(self, serializer):
+        """Bundle up the response data text translations
+
+        Bundle up the information the information coming in from the client
+        and transform it into the output that the client is expecting.
+
+        Args:
+            serializer (TextToTextSerializer): Containing the target language
+            code, and the text that is to be translated
+        
+        Returns:
+            TextToTextTranslatedSerializer or errors
+        """
+        translated_text = self.translate_text(
+            serializer.data["target_language_code"],
+            serializer.data["text"])
+        
+        translated_data = {
+            "translated_text": translated_text,
+        }
+        translated_text_serializer = self.output_serializer(
+            data=translated_data)
+
+        if translated_text_serializer.is_valid():
+            return translated_text_serializer.data
+        else:
+            return translated_text_serializer.errors
