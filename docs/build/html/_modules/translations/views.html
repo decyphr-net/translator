@@ -46,8 +46,7 @@
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
 <span class="kn">from</span> <span class="nn">.google_wrapper</span> <span class="kn">import</span> <span class="n">GoogleMixin</span>
-<span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">FullTranslationSerializer</span><span class="p">,</span> <span class="n">FullyTranslatedTextSerializer</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">serializers</span>
 
 
 <div class="viewcode-block" id="FullTranslator"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslator">[docs]</a><span class="k">class</span> <span class="nc">FullTranslator</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
@@ -56,13 +55,17 @@
 <span class="sd">    target specified target language</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">FullTranslationSerializer</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">FullTranslationSerializer</span>
 
 <div class="viewcode-block" id="FullTranslator.create"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslator.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The endpoint that will take the incoming data and language code and</span>
 <span class="sd">        send it to Google to be translated. The response will come back from</span>
-<span class="sd">        Google and it will be return the client</span>
+<span class="sd">        Google and it will be return the client.</span>
+
+<span class="sd">        In addition to translating the text, this endpoint will also generate</span>
+<span class="sd">        the audio file of the text and the analysis of the text according to</span>
+<span class="sd">        Google&#39;s Natural Language service.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            initial_language_code (str): A 4 character ISO 639-1 code to \</span>
@@ -72,7 +75,8 @@
 <span class="sd">            text (str): The text that is needed to be translated</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            JSON: The translated text and the location of the audio file</span>
+<span class="sd">            JSON: The translated text and the location of the audio file, with</span>
+<span class="sd">            the analysis of the text</span>
 <span class="sd">        </span>
 <span class="sd">        Example:</span>
 <span class="sd">            curl -X POST -H &quot;Content-type: application/json&quot; \</span>
@@ -98,7 +102,58 @@
                 <span class="s2">&quot;audio_location&quot;</span><span class="p">:</span> <span class="n">audio_location</span><span class="p">,</span>
                 <span class="s2">&quot;analyzed_text&quot;</span><span class="p">:</span> <span class="n">analyzed_text</span>
             <span class="p">}</span>
-            <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">FullyTranslatedTextSerializer</span><span class="p">(</span>
+            <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">FullTranslatedSerializer</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TextToTextTranslation"><a class="viewcode-back" href="../../index.html#translations.views.TextToTextTranslation">[docs]</a><span class="k">class</span> <span class="nc">TextToTextTranslation</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Text to text translation</span>
+
+<span class="sd">    This view will be used to perform simple text to text translations that</span>
+<span class="sd">    have no requirement to include </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">TextToTextSerializer</span>
+
+<div class="viewcode-block" id="TextToTextTranslation.create"><a class="viewcode-back" href="../../index.html#translations.views.TextToTextTranslation.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The endpoint that will take the incoming data and language code and</span>
+<span class="sd">        send it to Google to be translated. </span>
+
+<span class="sd">        This endpoint will only be used for straightforward text to text</span>
+<span class="sd">        translations</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target_language_code (str): A ISO 639-1 code that will be used \</span>
+<span class="sd">            to inform Google Translate of the target language</span>
+<span class="sd">            text (str): The text that is needed to be translated</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            JSON: The translated text</span>
+<span class="sd">        </span>
+<span class="sd">        Example:</span>
+<span class="sd">            curl -X POST -H &quot;Content-type: application/json&quot; \</span>
+<span class="sd">                http://127.0.0.1:8000/api/v1/text-to-text/ \</span>
+<span class="sd">                -d &#39;{&quot;target_language_code&quot;: &quot;en&quot;, &quot;text&quot;: &quot;oi&quot;}&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_class</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_language_code&quot;</span><span class="p">],</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+            
+            <span class="n">translated_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span>
+            <span class="p">}</span>
+            <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">TextToTextTranslatedSerializer</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
             
             <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
