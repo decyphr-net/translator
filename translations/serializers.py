@@ -6,8 +6,8 @@ This module will contain the serializers that relate to the translation views
 from rest_framework import serializers
 
 
-class PlainTextTranslationSerializer(serializers.Serializer):
-    """Plain Text Translation Serializer
+class FullTranslationSerializer(serializers.Serializer):
+    """Full Translation Serializer
 
     This serializer will be used to deserialize the incoming text and language
     code that will be sent to the Google Translate API
@@ -40,7 +40,7 @@ class PlainTextTranslationSerializer(serializers.Serializer):
         return target_language_code
 
 
-class TranslatedTextSerializer(serializers.Serializer):
+class FullyTranslatedTextSerializer(serializers.Serializer):
     """
     The translated information that will come back from the Google Translate
     API

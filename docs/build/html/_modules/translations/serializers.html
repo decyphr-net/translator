@@ -40,8 +40,8 @@
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
 
 
-<div class="viewcode-block" id="PlainTextTranslationSerializer"><a class="viewcode-back" href="../../index.html#translations.views.PlainTextTranslationSerializer">[docs]</a><span class="k">class</span> <span class="nc">PlainTextTranslationSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Plain Text Translation Serializer</span>
+<div class="viewcode-block" id="FullTranslationSerializer"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslationSerializer">[docs]</a><span class="k">class</span> <span class="nc">FullTranslationSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Full Translation Serializer</span>
 
 <span class="sd">    This serializer will be used to deserialize the incoming text and language</span>
 <span class="sd">    code that will be sent to the Google Translate API</span>
@@ -74,7 +74,7 @@
         <span class="k">return</span> <span class="n">target_language_code</span></div>
 
 
-<div class="viewcode-block" id="TranslatedTextSerializer"><a class="viewcode-back" href="../../index.html#translations.views.TranslatedTextSerializer">[docs]</a><span class="k">class</span> <span class="nc">TranslatedTextSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+<div class="viewcode-block" id="FullyTranslatedTextSerializer"><a class="viewcode-back" href="../../index.html#translations.views.FullyTranslatedTextSerializer">[docs]</a><span class="k">class</span> <span class="nc">FullyTranslatedTextSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The translated information that will come back from the Google Translate</span>
 <span class="sd">    API</span>
