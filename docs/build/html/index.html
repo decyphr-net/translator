@@ -91,6 +91,12 @@ the analysis of the text</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="translations.views.FullTranslator.output_serializer">
+<code class="descname">output_serializer</code><a class="headerlink" href="#translations.views.FullTranslator.output_serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#translations.serializers.FullTranslatedSerializer" title="translations.serializers.FullTranslatedSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.FullTranslatedSerializer</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="translations.views.FullTranslator.serializer_class">
 <code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.FullTranslator.serializer_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#translations.serializers.FullTranslationSerializer" title="translations.serializers.FullTranslationSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.FullTranslationSerializer</span></code></a></p>
@@ -134,6 +140,12 @@ translations</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="translations.views.TextToTextTranslation.output_serializer">
+<code class="descname">output_serializer</code><a class="headerlink" href="#translations.views.TextToTextTranslation.output_serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#translations.serializers.TextToTextTranslatedSerializer" title="translations.serializers.TextToTextTranslatedSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.TextToTextTranslatedSerializer</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="translations.views.TextToTextTranslation.serializer_class">
 <code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.TextToTextTranslation.serializer_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#translations.serializers.TextToTextSerializer" title="translations.serializers.TextToTextSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.TextToTextSerializer</span></code></a></p>
@@ -161,6 +173,53 @@ convert text to speech and analyze the structure of a piece of text.</p>
 <dt>In order to take advantage of this mixin, simple extended it::</dt>
 <dd>class TranslationEndpoint(viewsets.ViewSet, GoogleMixin):</dd>
 </dl>
+<dl class="method">
+<dt id="translations.google_wrapper.GoogleMixin.bundle_full_translation_response">
+<code class="descname">bundle_full_translation_response</code><span class="sig-paren">(</span><em>serializer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.bundle_full_translation_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.bundle_full_translation_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bundle up the response data for full translations</p>
+<p>Bundle up the information the information coming in from the client
+and transform it into the output that the client is expecting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>serializer</strong> (<a class="reference internal" href="#translations.serializers.FullTranslationSerializer" title="translations.serializers.FullTranslationSerializer"><em>FullTranslationSerializer</em></a>) – Containing the target</li>
+<li><strong>code</strong><strong>, </strong><strong>initial langauge code and the text that is to be</strong> (<em>language</em>) – </li>
+<li><strong>translated</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">FullTranslatedSerializer or errors</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="translations.google_wrapper.GoogleMixin.bundle_text_translation_response">
+<code class="descname">bundle_text_translation_response</code><span class="sig-paren">(</span><em>serializer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.bundle_text_translation_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.bundle_text_translation_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bundle up the response data text translations</p>
+<p>Bundle up the information the information coming in from the client
+and transform it into the output that the client is expecting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>serializer</strong> (<a class="reference internal" href="#translations.serializers.TextToTextSerializer" title="translations.serializers.TextToTextSerializer"><em>TextToTextSerializer</em></a>) – Containing the target language</li>
+<li><strong>and the text that is to be translated</strong> (<em>code</em><em>,</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">TextToTextTranslatedSerializer or errors</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="translations.google_wrapper.GoogleMixin.parse_text">
 <code class="descname">parse_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.parse_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.parse_text" title="Permalink to this definition">¶</a></dt>

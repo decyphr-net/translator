@@ -163,7 +163,70 @@
         <span class="n">encoding_type</span> <span class="o">=</span> <span class="n">enums</span><span class="o">.</span><span class="n">EncodingType</span><span class="o">.</span><span class="n">UTF8</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">natural_language_client</span><span class="o">.</span><span class="n">analyze_syntax</span><span class="p">(</span>
             <span class="n">document</span><span class="p">,</span> <span class="n">encoding_type</span><span class="o">=</span><span class="n">encoding_type</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">MessageToJson</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">MessageToJson</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="GoogleMixin.bundle_full_translation_response"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin.bundle_full_translation_response">[docs]</a>    <span class="k">def</span> <span class="nf">bundle_full_translation_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serializer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Bundle up the response data for full translations</span>
+
+<span class="sd">        Bundle up the information the information coming in from the client</span>
+<span class="sd">        and transform it into the output that the client is expecting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            serializer (FullTranslationSerializer): Containing the target</span>
+<span class="sd">            language code, initial langauge code and the text that is to be</span>
+<span class="sd">            translated</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            FullTranslatedSerializer or errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_language_code&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        <span class="n">audio_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_to_speech</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initial_language_code&quot;</span><span class="p">])</span>
+        <span class="n">analyzed_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_text</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        
+        <span class="n">translated_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span><span class="p">,</span>
+            <span class="s2">&quot;audio_location&quot;</span><span class="p">:</span> <span class="n">audio_location</span><span class="p">,</span>
+            <span class="s2">&quot;analyzed_text&quot;</span><span class="p">:</span> <span class="n">analyzed_text</span>
+        <span class="p">}</span>
+        <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_serializer</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">errors</span></div>
+    
+<div class="viewcode-block" id="GoogleMixin.bundle_text_translation_response"><a class="viewcode-back" href="../../index.html#translations.google_wrapper.GoogleMixin.bundle_text_translation_response">[docs]</a>    <span class="k">def</span> <span class="nf">bundle_text_translation_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serializer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Bundle up the response data text translations</span>
+
+<span class="sd">        Bundle up the information the information coming in from the client</span>
+<span class="sd">        and transform it into the output that the client is expecting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            serializer (TextToTextSerializer): Containing the target language</span>
+<span class="sd">            code, and the text that is to be translated</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            TextToTextTranslatedSerializer or errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_language_code&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        
+        <span class="n">translated_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_serializer</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">errors</span></div></div>
 </pre></div>
 
           </div>

@@ -22,12 +22,17 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
     """
 
     serializer_class = serializers.FullTranslationSerializer
+    output_serializer = serializers.FullTranslatedSerializer
 
     def create(self, request):
         """
         The endpoint that will take the incoming data and language code and
         send it to Google to be translated. The response will come back from
-        Google and it will be return the client
+        Google and it will be return the client.
+
+        In addition to translating the text, this endpoint will also generate
+        the audio file of the text and the analysis of the text according to
+        Google's Natural Language service.
 
         Args:
             initial_language_code (str): A 4 character ISO 639-1 code to \
@@ -37,7 +42,8 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
             text (str): The text that is needed to be translated
         
         Returns:
-            JSON: The translated text and the location of the audio file
+            JSON: The translated text and the location of the audio file, with
+            the analysis of the text
         
         Example:
             curl -X POST -H "Content-type: application/json" \
@@ -50,26 +56,8 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
         # If the incoming information is valid, then we'll translate the text
         # and return that newly created translation
         if serializer.is_valid():
-            translated_text = self.translate_text(
-                serializer.data["target_language_code"],
-                serializer.data["text"])
-            audio_location = self.text_to_speech(
-                serializer.data["text"],
-                serializer.data["initial_language_code"])
-            analyzed_text = self.parse_text(serializer.data["text"])
-            
-            translated_data = {
-                "translated_text": translated_text,
-                "audio_location": audio_location,
-                "analyzed_text": analyzed_text
-            }
-            translated_text_serializer = serializers.FullTranslatedSerializer(
-                data=translated_data)
-            
-            if translated_text_serializer.is_valid():
-                return Response(translated_text_serializer.data)
-            else:
-                return Response(translated_text_serializer.errors)
+            output = self.bundle_full_translation_response(serializer)
+            return Response(output)
         else:
             return Response(serializer.errors)
 
@@ -81,27 +69,37 @@ class TextToTextTranslation(viewsets.ViewSet, GoogleMixin):
     have no requirement to include 
     """
 
-    serializer_class = serializers.PlainTranslationSerializer
+    serializer_class = serializers.TextToTextSerializer
+    output_serializer = serializers.TextToTextTranslatedSerializer
 
     def create(self, request):
         """
+        The endpoint that will take the incoming data and language code and
+        send it to Google to be translated. 
+
+        This endpoint will only be used for straightforward text to text
+        translations
+
+        Args:
+            target_language_code (str): A ISO 639-1 code that will be used \
+            to inform Google Translate of the target language
+            text (str): The text that is needed to be translated
+        
+        Returns:
+            JSON: The translated text
+        
+        Example:
+            curl -X POST -H "Content-type: application/json" \
+                http://127.0.0.1:8000/api/v1/text-to-text/ \
+                -d '{"target_language_code": "en", "text": "oi"}'
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            translated_text = self.translate_text(
-                serializer.data["target_language_code"],
-                serializer.data["text"])
-            
-            translated_data = {
-                "translated_text": translated_text
-            }
-            translated_text_serializer = serializers.PlainTranslatedSerializer(
-                data=translated_data)
-            
-            if translated_text_serializer.is_valid():
-                return Response(translated_text_serializer.data)
+            if serializer.is_valid():
+                output = self.bundle_text_translation_response(serializer)
+                return Response(output)
             else:
-                return Response(translated_text_serializer.errors)
+                return Response(serializer.errors)
         else:
             return Response(serializer.errors)
