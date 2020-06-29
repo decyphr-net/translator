@@ -47,18 +47,18 @@
 <span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
 <span class="kn">from</span> <span class="nn">.google_wrapper</span> <span class="kn">import</span> <span class="n">GoogleMixin</span>
 <span class="kn">from</span> <span class="nn">.serializers</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">PlainTextTranslationSerializer</span><span class="p">,</span> <span class="n">TranslatedTextSerializer</span><span class="p">)</span>
+    <span class="n">FullTranslationSerializer</span><span class="p">,</span> <span class="n">FullyTranslatedTextSerializer</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PlainTextTranslator"><a class="viewcode-back" href="../../index.html#translations.views.PlainTextTranslator">[docs]</a><span class="k">class</span> <span class="nc">PlainTextTranslator</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="FullTranslator"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslator">[docs]</a><span class="k">class</span> <span class="nc">FullTranslator</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The translation endpoint that will be used to translate basic text into a</span>
 <span class="sd">    target specified target language</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">PlainTextTranslationSerializer</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">FullTranslationSerializer</span>
 
-<div class="viewcode-block" id="PlainTextTranslator.create"><a class="viewcode-back" href="../../index.html#translations.views.PlainTextTranslator.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="FullTranslator.create"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslator.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The endpoint that will take the incoming data and language code and</span>
 <span class="sd">        send it to Google to be translated. The response will come back from</span>
@@ -76,7 +76,7 @@
 <span class="sd">        </span>
 <span class="sd">        Example:</span>
 <span class="sd">            curl -X POST -H &quot;Content-type: application/json&quot; \</span>
-<span class="sd">                http://127.0.0.1:8000/api/v1/plain-text/ \</span>
+<span class="sd">                http://127.0.0.1:8000/api/v1/full-translation/ \</span>
 <span class="sd">                -d &#39;{&quot;initial_language_code&quot;: &quot;pt-BR&quot;, \</span>
 <span class="sd">                     &quot;target_language_code&quot;: &quot;en&quot;, &quot;text&quot;: &quot;oi&quot;}&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -98,7 +98,7 @@
                 <span class="s2">&quot;audio_location&quot;</span><span class="p">:</span> <span class="n">audio_location</span><span class="p">,</span>
                 <span class="s2">&quot;analyzed_text&quot;</span><span class="p">:</span> <span class="n">analyzed_text</span>
             <span class="p">}</span>
-            <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">TranslatedTextSerializer</span><span class="p">(</span>
+            <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="n">FullyTranslatedTextSerializer</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
             
             <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>

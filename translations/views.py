@@ -42,7 +42,7 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
         
         Example:
             curl -X POST -H "Content-type: application/json" \
-                http://127.0.0.1:8000/api/v1/plain-text/ \
+                http://127.0.0.1:8000/api/v1/full-translation/ \
                 -d '{"initial_language_code": "pt-BR", \
                      "target_language_code": "en", "text": "oi"}'
         """

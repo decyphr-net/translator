@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 
 class FullTranslationSerializer(serializers.Serializer):
-    """Plain Text Translation Serializer
+    """Full Translation Serializer
 
     This serializer will be used to deserialize the incoming text and language
     code that will be sent to the Google Translate API

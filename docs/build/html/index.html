@@ -53,13 +53,13 @@ communicate with.</p>
 and the Google Translate API. Incoming text will be deserialized, translated
 and returned back the cosumer that will ultimately be returned to an end user.</p>
 <dl class="class">
-<dt id="translations.views.PlainTextTranslator">
-<em class="property">class </em><code class="descclassname">translations.views.</code><code class="descname">PlainTextTranslator</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#PlainTextTranslator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.PlainTextTranslator" title="Permalink to this definition">¶</a></dt>
+<dt id="translations.views.FullTranslator">
+<em class="property">class </em><code class="descclassname">translations.views.</code><code class="descname">FullTranslator</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#FullTranslator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.FullTranslator" title="Permalink to this definition">¶</a></dt>
 <dd><p>The translation endpoint that will be used to translate basic text into a
 target specified target language</p>
 <dl class="method">
-<dt id="translations.views.PlainTextTranslator.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#PlainTextTranslator.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.PlainTextTranslator.create" title="Permalink to this definition">¶</a></dt>
+<dt id="translations.views.FullTranslator.create">
+<code class="descname">create</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#FullTranslator.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.FullTranslator.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>The endpoint that will take the incoming data and language code and
 send it to Google to be translated. The response will come back from
 Google and it will be return the client</p>
@@ -83,13 +83,13 @@ Google and it will be return the client</p>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>curl -X POST -H “Content-type: application/json”                 <a class="reference external" href="http://127.0.0.1:8000/api/v1/plain-text/">http://127.0.0.1:8000/api/v1/plain-text/</a>                 -d ‘{“initial_language_code”: “pt-BR”,                      “target_language_code”: “en”, “text”: “oi”}’</p>
+<p>curl -X POST -H “Content-type: application/json”                 <a class="reference external" href="http://127.0.0.1:8000/api/v1/full-translation/">http://127.0.0.1:8000/api/v1/full-translation/</a>                 -d ‘{“initial_language_code”: “pt-BR”,                      “target_language_code”: “en”, “text”: “oi”}’</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="translations.views.PlainTextTranslator.serializer_class">
-<code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.PlainTextTranslator.serializer_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#translations.serializers.PlainTextTranslationSerializer" title="translations.serializers.PlainTextTranslationSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.PlainTextTranslationSerializer</span></code></a></p>
+<dt id="translations.views.FullTranslator.serializer_class">
+<code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.FullTranslator.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#translations.serializers.FullTranslationSerializer" title="translations.serializers.FullTranslationSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.FullTranslationSerializer</span></code></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -215,9 +215,9 @@ a UUID for each new file being created</p>
 <p>Translation Serializers.</p>
 <p>This module will contain the serializers that relate to the translation views</p>
 <dl class="class">
-<dt id="translations.serializers.PlainTextTranslationSerializer">
-<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">PlainTextTranslationSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#PlainTextTranslationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.PlainTextTranslationSerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plain Text Translation Serializer</p>
+<dt id="translations.serializers.FullTranslationSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">FullTranslationSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslationSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full Translation Serializer</p>
 <p>This serializer will be used to deserialize the incoming text and language
 code that will be sent to the Google Translate API</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -235,8 +235,8 @@ code that will be sent to the Google Translate API</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="translations.serializers.TranslatedTextSerializer">
-<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">TranslatedTextSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#TranslatedTextSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.TranslatedTextSerializer" title="Permalink to this definition">¶</a></dt>
+<dt id="translations.serializers.FullyTranslatedTextSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">FullyTranslatedTextSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullyTranslatedTextSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullyTranslatedTextSerializer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The translated information that will come back from the Google Translate
 API</p>
 <table class="docutils field-list" frame="void" rules="none">
