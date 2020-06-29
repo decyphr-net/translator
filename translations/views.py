@@ -12,8 +12,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from .google_wrapper import GoogleMixin
-from .serializers import (
-    FullTranslationSerializer, FullyTranslatedTextSerializer)
+from . import serializers
 
 
 class FullTranslator(viewsets.ViewSet, GoogleMixin):
@@ -22,7 +21,7 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
     target specified target language
     """
 
-    serializer_class = FullTranslationSerializer
+    serializer_class = serializers.FullTranslationSerializer
 
     def create(self, request):
         """
@@ -64,7 +63,40 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
                 "audio_location": audio_location,
                 "analyzed_text": analyzed_text
             }
-            translated_text_serializer = FullyTranslatedTextSerializer(
+            translated_text_serializer = serializers.FullTranslatedSerializer(
+                data=translated_data)
+            
+            if translated_text_serializer.is_valid():
+                return Response(translated_text_serializer.data)
+            else:
+                return Response(translated_text_serializer.errors)
+        else:
+            return Response(serializer.errors)
+
+
+class TextToTextTranslation(viewsets.ViewSet, GoogleMixin):
+    """Text to text translation
+
+    This view will be used to perform simple text to text translations that
+    have no requirement to include 
+    """
+
+    serializer_class = serializers.PlainTranslationSerializer
+
+    def create(self, request):
+        """
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            translated_text = self.translate_text(
+                serializer.data["target_language_code"],
+                serializer.data["text"])
+            
+            translated_data = {
+                "translated_text": translated_text
+            }
+            translated_text_serializer = serializers.PlainTranslatedSerializer(
                 data=translated_data)
             
             if translated_text_serializer.is_valid():
