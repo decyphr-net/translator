@@ -13,16 +13,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from .google_wrapper import GoogleMixin
 from .serializers import (
-    PlainTextTranslationSerializer, TranslatedTextSerializer)
+    FullTranslationSerializer, FullyTranslatedTextSerializer)
 
 
-class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
+class FullTranslator(viewsets.ViewSet, GoogleMixin):
     """
     The translation endpoint that will be used to translate basic text into a
     target specified target language
     """
 
-    serializer_class = PlainTextTranslationSerializer
+    serializer_class = FullTranslationSerializer
 
     def create(self, request):
         """
@@ -64,7 +64,7 @@ class PlainTextTranslator(viewsets.ViewSet, GoogleMixin):
                 "audio_location": audio_location,
                 "analyzed_text": analyzed_text
             }
-            translated_text_serializer = TranslatedTextSerializer(
+            translated_text_serializer = FullyTranslatedTextSerializer(
                 data=translated_data)
             
             if translated_text_serializer.is_valid():

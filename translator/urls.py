@@ -16,11 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from translations.views import PlainTextTranslator
+from translations.views import FullTranslator
 
 router = routers.DefaultRouter()
 
-router.register(r'plain-text', PlainTextTranslator, basename='translator')
+router.register(r'full-translation', FullTranslator, basename='translator')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
