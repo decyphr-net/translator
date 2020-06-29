@@ -62,7 +62,10 @@ target specified target language</p>
 <code class="descname">create</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#FullTranslator.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.FullTranslator.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>The endpoint that will take the incoming data and language code and
 send it to Google to be translated. The response will come back from
-Google and it will be return the client</p>
+Google and it will be return the client.</p>
+<p>In addition to translating the text, this endpoint will also generate
+the audio file of the text and the analysis of the text according to
+Google’s Natural Language service.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -74,7 +77,8 @@ Google and it will be return the client</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The translated text and the location of the audio file</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The translated text and the location of the audio file, with
+the analysis of the text</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">JSON</p>
@@ -90,6 +94,49 @@ Google and it will be return the client</p>
 <dt id="translations.views.FullTranslator.serializer_class">
 <code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.FullTranslator.serializer_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#translations.serializers.FullTranslationSerializer" title="translations.serializers.FullTranslationSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.FullTranslationSerializer</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="translations.views.TextToTextTranslation">
+<em class="property">class </em><code class="descclassname">translations.views.</code><code class="descname">TextToTextTranslation</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#TextToTextTranslation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.TextToTextTranslation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text to text translation</p>
+<p>This view will be used to perform simple text to text translations that
+have no requirement to include</p>
+<dl class="method">
+<dt id="translations.views.TextToTextTranslation.create">
+<code class="descname">create</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/views.html#TextToTextTranslation.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.views.TextToTextTranslation.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>The endpoint that will take the incoming data and language code and
+send it to Google to be translated.</p>
+<p>This endpoint will only be used for straightforward text to text
+translations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used             to inform Google Translate of the target language</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The translated text</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">JSON</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>curl -X POST -H “Content-type: application/json”                 <a class="reference external" href="http://127.0.0.1:8000/api/v1/text-to-text/">http://127.0.0.1:8000/api/v1/text-to-text/</a>                 -d ‘{“target_language_code”: “en”, “text”: “oi”}’</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="translations.views.TextToTextTranslation.serializer_class">
+<code class="descname">serializer_class</code><a class="headerlink" href="#translations.views.TextToTextTranslation.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#translations.serializers.TextToTextSerializer" title="translations.serializers.TextToTextSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">translations.serializers.TextToTextSerializer</span></code></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -213,20 +260,87 @@ a UUID for each new file being created</p>
 <div class="section" id="module-translations.serializers">
 <span id="translations-serializers"></span><h1>Translations serializers<a class="headerlink" href="#module-translations.serializers" title="Permalink to this headline">¶</a></h1>
 <p>Translation Serializers.</p>
-<p>This module will contain the serializers that relate to the translation views</p>
+<p>This module will contain the serializers that relate to the translation views.
+There are two main serializer types - Input serializers and Output serializers.</p>
+<p>Input serializers will handle the deserialization and validation of incoming
+information.</p>
+<p>Output serializers will serialize the information that comes back from Google
+Cloud and serialize it to send it back to the client.</p>
 <dl class="class">
-<dt id="translations.serializers.FullTranslationSerializer">
-<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">FullTranslationSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslationSerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Full Translation Serializer</p>
-<p>This serializer will be used to deserialize the incoming text and language
-code that will be sent to the Google Translate API</p>
+<dt id="translations.serializers.BaseInputTranslation">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">BaseInputTranslation</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#BaseInputTranslation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.BaseInputTranslation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base Input Serializer</p>
+<p>The base translation serializer that will implement the basic fields and
+validations that will be required on all incoming data.</p>
+<p>At it’s most basic, a translation task will require a piece of text and
+the target language the client needs the text translated to.</p>
+<p>In the event that the properties of this class are sufficient, it may
+still be better to create a new class that inherits this class, rather
+than using this class directly</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to inform         Google Translate of the target language</li>
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 2 digit ISO 639-1 code</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The piece of text that is to be translated</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="translations.serializers.BaseInputTranslation.validate_target_language_code">
+<code class="descname">validate_target_language_code</code><span class="sig-paren">(</span><em>target_language_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#BaseInputTranslation.validate_target_language_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.BaseInputTranslation.validate_target_language_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate target language code</p>
+<p>Validate the target language code to ensure that the string is 2
+digits. If the string is too long or too short then the consumer of
+the API needs to be informed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="translations.serializers.BaseOutputSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">BaseOutputSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#BaseOutputSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.BaseOutputSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base Output Serializer</p>
+<p>The base translation serializer that will implement the basic fields and
+validations that will be required on all outgoing data.</p>
+<p>The simplest implementation of this will only require the result of the
+translation.</p>
+<p>In the event that the properties of this class are sufficient, it may
+still be better to create a new class that inherits this class, rather
+than using this class directly</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text returned from Cloud Translate</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="translations.serializers.FullTranslatedSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">FullTranslatedSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslatedSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslatedSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full Translated Serializer</p>
+<p>This serializer will handle the serialization of the information that
+comes back from the Cloud APIs.</p>
+<p>The purpose of this serializer is to serializer the information that comes
+back from the following services:
+- Translate
+- Text To Speech &amp; Cloud Storage
+- Natural language</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The newly translated text</li>
+<li><strong>audio_location</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The URL to the generated audio file</li>
+<li><strong>analyzed_text</strong> (<em>JSON</em>) – A JSON representation of Google’s analysis</li>
+<li><strong>the text</strong> (<em>of</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -235,18 +349,62 @@ code that will be sent to the Google Translate API</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="translations.serializers.FullyTranslatedTextSerializer">
-<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">FullyTranslatedTextSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullyTranslatedTextSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullyTranslatedTextSerializer" title="Permalink to this definition">¶</a></dt>
-<dd><p>The translated information that will come back from the Google Translate
-API</p>
+<dt id="translations.serializers.FullTranslationSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">FullTranslationSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslationSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full Translation Serializer</p>
+<p>This serializer will be used to deserialize the incoming text and language
+code that will be sent to the Google Translate API.</p>
+<p>This serializer will be used for the specific purpose of translating text,
+getting creating an audio representation of the text and a text anaylsis.
+For this reason, it is necessary to provide the initial language code to
+inform Google’s Text to Speech service which language it will be
+converting to speech</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The newly translated text</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>initial_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 4 digit ISO 639-1 code</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 2 digit ISO 639-1 code</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The piece of text that is to be translated</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="translations.serializers.FullTranslationSerializer.validate_initial_language_code">
+<code class="descname">validate_initial_language_code</code><span class="sig-paren">(</span><em>initial_language_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslationSerializer.validate_initial_language_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslationSerializer.validate_initial_language_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate initial language code</p>
+<p>Validate the initial language code to ensure that the string is 5
+digits. If the string is too long or too short then the consumer of
+the API needs to be informed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="translations.serializers.TextToTextSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">TextToTextSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#TextToTextSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.TextToTextSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text To Text Serializer</p>
+<p>This serializer will receive the text that needs to be translated and the
+language that it needs to be translated to.</p>
+<p>This serializer will be used solely for straighforward text to text
+translations where the only requirement is to translate the text from the
+initial language to the specified target language.</p>
+<p>For this reason, it is enough to use only the fields provided by the
+parent.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="translations.serializers.TextToTextTranslatedSerializer">
+<em class="property">class </em><code class="descclassname">translations.serializers.</code><code class="descname">TextToTextTranslatedSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#TextToTextTranslatedSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.TextToTextTranslatedSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text To Text Translated Serializer</p>
+<p>This serializer will be used solely for straighforward text to text
+translations where the only requirement is to return the translated text
+to the client.</p>
+<p>For this reason, it is enough to use only the fields provided by the
+parent.</p>
 </dd></dl>
 
 </div>

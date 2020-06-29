@@ -35,56 +35,155 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Translation Serializers.</span>
 
-<span class="sd">This module will contain the serializers that relate to the translation views</span>
+<span class="sd">This module will contain the serializers that relate to the translation views.</span>
+<span class="sd">There are two main serializer types - Input serializers and Output serializers.</span>
+
+<span class="sd">Input serializers will handle the deserialization and validation of incoming</span>
+<span class="sd">information.</span>
+
+<span class="sd">Output serializers will serialize the information that comes back from Google</span>
+<span class="sd">Cloud and serialize it to send it back to the client.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
 
+<span class="n">CODE_MSG</span> <span class="o">=</span> <span class="s2">&quot;The language code is too </span><span class="si">{}</span><span class="s2">. Please use ISO 639-1 format&quot;</span>
 
-<div class="viewcode-block" id="FullTranslationSerializer"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslationSerializer">[docs]</a><span class="k">class</span> <span class="nc">FullTranslationSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Full Translation Serializer</span>
 
-<span class="sd">    This serializer will be used to deserialize the incoming text and language</span>
-<span class="sd">    code that will be sent to the Google Translate API</span>
+<div class="viewcode-block" id="BaseInputTranslation"><a class="viewcode-back" href="../../index.html#translations.views.BaseInputTranslation">[docs]</a><span class="k">class</span> <span class="nc">BaseInputTranslation</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base Input Serializer</span>
+
+<span class="sd">    The base translation serializer that will implement the basic fields and</span>
+<span class="sd">    validations that will be required on all incoming data.</span>
+
+<span class="sd">    At it&#39;s most basic, a translation task will require a piece of text and</span>
+<span class="sd">    the target language the client needs the text translated to.</span>
+
+<span class="sd">    In the event that the properties of this class are sufficient, it may</span>
+<span class="sd">    still be better to create a new class that inherits this class, rather</span>
+<span class="sd">    than using this class directly </span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        target_language_code (str): A ISO 639-1 code that will be used to inform \</span>
-<span class="sd">        Google Translate of the target language</span>
-<span class="sd">        text (str): The text that is needed to be translated</span>
+<span class="sd">        target_language_code (str): A 2 digit ISO 639-1 code</span>
+<span class="sd">        text (str): The piece of text that is to be translated</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">initial_language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">target_language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">validate_initial_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_language_code</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
-                <span class="s2">&quot;The language code provided is too short. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
-                <span class="s2">&quot;The language code provided is too long. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">initial_language_code</span>
+<div class="viewcode-block" id="BaseInputTranslation.validate_target_language_code"><a class="viewcode-back" href="../../index.html#translations.views.BaseInputTranslation.validate_target_language_code">[docs]</a>    <span class="k">def</span> <span class="nf">validate_target_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_language_code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate target language code</span>
 
-    <span class="k">def</span> <span class="nf">validate_target_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_language_code</span><span class="p">):</span>
+<span class="sd">        Validate the target language code to ensure that the string is 2</span>
+<span class="sd">        digits. If the string is too long or too short then the consumer of</span>
+<span class="sd">        the API needs to be informed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
-                <span class="s2">&quot;The language code provided is too short. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">CODE_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;short&quot;</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
-                <span class="s2">&quot;The language code provided is too long. Please ensure the code is in ISO 639-1 format&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">target_language_code</span></div>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">CODE_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">target_language_code</span></div></div>
 
 
-<div class="viewcode-block" id="FullyTranslatedTextSerializer"><a class="viewcode-back" href="../../index.html#translations.views.FullyTranslatedTextSerializer">[docs]</a><span class="k">class</span> <span class="nc">FullyTranslatedTextSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The translated information that will come back from the Google Translate</span>
-<span class="sd">    API</span>
+<div class="viewcode-block" id="FullTranslationSerializer"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslationSerializer">[docs]</a><span class="k">class</span> <span class="nc">FullTranslationSerializer</span><span class="p">(</span><span class="n">BaseInputTranslation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Full Translation Serializer</span>
+
+<span class="sd">    This serializer will be used to deserialize the incoming text and language</span>
+<span class="sd">    code that will be sent to the Google Translate API.</span>
+
+<span class="sd">    This serializer will be used for the specific purpose of translating text,</span>
+<span class="sd">    getting creating an audio representation of the text and a text anaylsis.</span>
+<span class="sd">    For this reason, it is necessary to provide the initial language code to</span>
+<span class="sd">    inform Google&#39;s Text to Speech service which language it will be</span>
+<span class="sd">    converting to speech</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        initial_language_code (str): A 4 digit ISO 639-1 code</span>
+<span class="sd">        target_language_code (str): A 2 digit ISO 639-1 code</span>
+<span class="sd">        text (str): The piece of text that is to be translated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">initial_language_code</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FullTranslationSerializer.validate_initial_language_code"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslationSerializer.validate_initial_language_code">[docs]</a>    <span class="k">def</span> <span class="nf">validate_initial_language_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_language_code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validate initial language code</span>
+
+<span class="sd">        Validate the initial language code to ensure that the string is 5</span>
+<span class="sd">        digits. If the string is too long or too short then the consumer of</span>
+<span class="sd">        the API needs to be informed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_language_code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">CODE_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;short&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_language_code</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">CODE_MSG</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;long&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">initial_language_code</span></div></div>
+
+
+<div class="viewcode-block" id="TextToTextSerializer"><a class="viewcode-back" href="../../index.html#translations.views.TextToTextSerializer">[docs]</a><span class="k">class</span> <span class="nc">TextToTextSerializer</span><span class="p">(</span><span class="n">BaseInputTranslation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Text To Text Serializer</span>
+
+<span class="sd">    This serializer will receive the text that needs to be translated and the</span>
+<span class="sd">    language that it needs to be translated to.</span>
+
+<span class="sd">    This serializer will be used solely for straighforward text to text</span>
+<span class="sd">    translations where the only requirement is to translate the text from the</span>
+<span class="sd">    initial language to the specified target language.</span>
+<span class="sd">    </span>
+<span class="sd">    For this reason, it is enough to use only the fields provided by the</span>
+<span class="sd">    parent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BaseOutputSerializer"><a class="viewcode-back" href="../../index.html#translations.views.BaseOutputSerializer">[docs]</a><span class="k">class</span> <span class="nc">BaseOutputSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">Serializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base Output Serializer</span>
+
+<span class="sd">    The base translation serializer that will implement the basic fields and</span>
+<span class="sd">    validations that will be required on all outgoing data.</span>
+
+<span class="sd">    The simplest implementation of this will only require the result of the</span>
+<span class="sd">    translation.</span>
+
+<span class="sd">    In the event that the properties of this class are sufficient, it may</span>
+<span class="sd">    still be better to create a new class that inherits this class, rather</span>
+<span class="sd">    than using this class directly </span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        translated_text (str): The text returned from Cloud Translate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">translated_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FullTranslatedSerializer"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslatedSerializer">[docs]</a><span class="k">class</span> <span class="nc">FullTranslatedSerializer</span><span class="p">(</span><span class="n">BaseOutputSerializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Full Translated Serializer</span>
+
+<span class="sd">    This serializer will handle the serialization of the information that</span>
+<span class="sd">    comes back from the Cloud APIs.</span>
+
+<span class="sd">    The purpose of this serializer is to serializer the information that comes</span>
+<span class="sd">    back from the following services:</span>
+<span class="sd">    - Translate</span>
+<span class="sd">    - Text To Speech &amp; Cloud Storage</span>
+<span class="sd">    - Natural language</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        translated_text (str): The newly translated text</span>
+<span class="sd">        audio_location (str): The URL to the generated audio file</span>
+<span class="sd">        analyzed_text (JSON): A JSON representation of Google&#39;s analysis</span>
+<span class="sd">        of the text</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">translated_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">audio_location</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">analyzed_text</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">JSONField</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TextToTextTranslatedSerializer"><a class="viewcode-back" href="../../index.html#translations.views.TextToTextTranslatedSerializer">[docs]</a><span class="k">class</span> <span class="nc">TextToTextTranslatedSerializer</span><span class="p">(</span><span class="n">BaseOutputSerializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Text To Text Translated Serializer</span>
+
+<span class="sd">    This serializer will be used solely for straighforward text to text</span>
+<span class="sd">    translations where the only requirement is to return the translated text</span>
+<span class="sd">    to the client.</span>
+<span class="sd">    </span>
+<span class="sd">    For this reason, it is enough to use only the fields provided by the</span>
+<span class="sd">    parent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
 </pre></div>
 
           </div>
