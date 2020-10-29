@@ -74,7 +74,7 @@ class FullTranslationSerializer(BaseInputTranslation):
     def validate_initial_language_code(self, initial_language_code):
         """Validate initial language code
 
-        Validate the initial language code to ensure that the string is 5
+        Validate the initial language code to ensure that the string is 2
         digits. If the string is too long or too short then the consumer of
         the API needs to be informed
         """
@@ -85,7 +85,7 @@ class FullTranslationSerializer(BaseInputTranslation):
         return initial_language_code
 
     def validate_initial_language_code_long(self, initial_language_code_long):
-        """Validate initial language code
+        """Validate initial language code long
 
         Validate the initial language code to ensure that the string is 5
         digits. If the string is too long or too short then the consumer of
