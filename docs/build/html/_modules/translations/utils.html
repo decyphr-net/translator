@@ -1,0 +1,255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>translations.utils &#8212; decypr-translator 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for translations.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This class is a mixin that will be used in all of the endpoints relating to</span>
+<span class="sd">the interaction with AWS services.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+
+<span class="n">_region</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">REGION</span>
+<span class="n">_access_key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ACCESS_KEY_ID</span>
+<span class="n">_secret_key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SECRET_ACCESS_KEY</span>
+
+
+<div class="viewcode-block" id="LanguageProcessingMixin"><a class="viewcode-back" href="../../index.html#translations.utils.LanguageProcessingMixin">[docs]</a><span class="k">class</span> <span class="nc">LanguageProcessingMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The language processing mixin</span>
+
+<span class="sd">    This mixin will contain all of the necessary functionality required to</span>
+<span class="sd">    integrate with the relevant services.</span>
+
+<span class="sd">    The purpose of this mixin os to provide an into the external services in a</span>
+<span class="sd">    single class. A class extending this class will be able to translate text</span>
+<span class="sd">    convert it to speech and provide a breakdown of the text.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        In order to take advantage of this mixin, simple extended it::</span>
+<span class="sd">            class TranslationEndpoint(viewsets.ViewSet, LanguageProcessingMixin):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_translator</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+        <span class="s2">&quot;translate&quot;</span><span class="p">,</span>
+        <span class="n">_region</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">_access_key</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">_secret_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">_polly</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+        <span class="s2">&quot;polly&quot;</span><span class="p">,</span>
+        <span class="n">_region</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">_access_key</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">_secret_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">_comprehend</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+        <span class="s2">&quot;comprehend&quot;</span><span class="p">,</span>
+        <span class="n">_region</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">_access_key</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">_secret_key</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_text_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Analyse text</span>
+
+<span class="sd">        Send the text to AWS Comprehend to be analysed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be analysed</span>
+<span class="sd">            language (str): The code for the language that the text is written in</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The syntactical structure of the text (dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comprehend</span><span class="o">.</span><span class="n">detect_syntax</span><span class="p">(</span><span class="n">Text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">LanguageCode</span><span class="o">=</span><span class="n">language</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;SyntaxTokens&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_generate_audio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">new_language</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate audio file</span>
+
+<span class="sd">        The audio file that is necessary for playing back the audio for a user</span>
+<span class="sd">        to listen, is generated by Polly and stored on S3. The function invokes</span>
+<span class="sd">        the service to generate the audio file and returns the location.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to be converted to audio</span>
+<span class="sd">            new_language (str): The ISO 639-1 code of the text language</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The URI to the mp3 (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polly</span><span class="o">.</span><span class="n">start_speech_synthesis_task</span><span class="p">(</span>
+            <span class="n">Engine</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">POLLY_CONFIG</span><span class="p">[</span><span class="s2">&quot;engine&quot;</span><span class="p">],</span>
+            <span class="n">LanguageCode</span><span class="o">=</span><span class="n">new_language</span><span class="p">,</span>
+            <span class="n">OutputFormat</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">POLLY_CONFIG</span><span class="p">[</span><span class="s2">&quot;output_format&quot;</span><span class="p">],</span>
+            <span class="n">OutputS3BucketName</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">BUCKET_NAME</span><span class="p">,</span>
+            <span class="n">Text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">TextType</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">POLLY_CONFIG</span><span class="p">[</span><span class="s2">&quot;text_type&quot;</span><span class="p">],</span>
+            <span class="n">VoiceId</span><span class="o">=</span><span class="s2">&quot;Ricardo&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;SynthesisTask&quot;</span><span class="p">][</span><span class="s2">&quot;OutputUri&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_translate_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">first_language</span><span class="p">,</span> <span class="n">new_language</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Translate text</span>
+
+<span class="sd">        Translate the text from the provided language into the user&#39;s</span>
+<span class="sd">        language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The piece of text to be translated first</span>
+<span class="sd">            first_language: The ISO 639-1 code of the text language</span>
+<span class="sd">            new_language: The ISO 639-1 code of the language to translate to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The translated text (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translator</span><span class="o">.</span><span class="n">translate_text</span><span class="p">(</span>
+            <span class="n">Text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">SourceLanguageCode</span><span class="o">=</span><span class="n">new_language</span><span class="p">,</span>
+            <span class="n">TargetLanguageCode</span><span class="o">=</span><span class="n">first_language</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;TranslatedText&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="LanguageProcessingMixin.bundle_full_translation_response"><a class="viewcode-back" href="../../index.html#translations.utils.LanguageProcessingMixin.bundle_full_translation_response">[docs]</a>    <span class="k">def</span> <span class="nf">bundle_full_translation_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serializer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Bundle up the response data for full translations</span>
+
+<span class="sd">        Bundle up the information the information coming in from the client</span>
+<span class="sd">        and transform it into the output that the client is expecting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            serializer (FullTranslationSerializer): Containing the target</span>
+<span class="sd">            language code, initial langauge code and the text that is to be</span>
+<span class="sd">            translated</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            FullTranslatedSerializer or errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_text</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initial_language_code&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_language_code&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">audio_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_audio_file</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initial_language_code_long&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">analyzed_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_text_analysis</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initial_language_code&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">translated_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span><span class="p">,</span>
+            <span class="s2">&quot;audio_location&quot;</span><span class="p">:</span> <span class="n">audio_location</span><span class="p">,</span>
+            <span class="s2">&quot;analyzed_text&quot;</span><span class="p">:</span> <span class="n">analyzed_text</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_serializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">errors</span></div>
+
+<div class="viewcode-block" id="LanguageProcessingMixin.bundle_text_translation_response"><a class="viewcode-back" href="../../index.html#translations.utils.LanguageProcessingMixin.bundle_text_translation_response">[docs]</a>    <span class="k">def</span> <span class="nf">bundle_text_translation_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serializer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Bundle up the response data text translations</span>
+
+<span class="sd">        Bundle up the information the information coming in from the client</span>
+<span class="sd">        and transform it into the output that the client is expecting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            serializer (TextToTextSerializer): Containing the target language</span>
+<span class="sd">            code, and the text that is to be translated</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TextToTextTranslatedSerializer or errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">translated_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_text</span><span class="p">(</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;initial_language_code&quot;</span><span class="p">],</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_language_code&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">translated_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;translated_text&quot;</span><span class="p">:</span> <span class="n">translated_text</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">translated_text_serializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_serializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">translated_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">translated_text_serializer</span><span class="o">.</span><span class="n">errors</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Aaron Sinnott.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

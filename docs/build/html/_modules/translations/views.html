@@ -45,11 +45,11 @@
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">viewsets</span>
 <span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">.google_wrapper</span> <span class="kn">import</span> <span class="n">GoogleMixin</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">LanguageProcessingMixin</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">serializers</span>
 
 
-<div class="viewcode-block" id="FullTranslator"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslator">[docs]</a><span class="k">class</span> <span class="nc">FullTranslator</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="FullTranslator"><a class="viewcode-back" href="../../index.html#translations.views.FullTranslator">[docs]</a><span class="k">class</span> <span class="nc">FullTranslator</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">LanguageProcessingMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The translation endpoint that will be used to translate basic text into a</span>
 <span class="sd">    target specified target language</span>
@@ -96,11 +96,11 @@
             <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TextToTextTranslation"><a class="viewcode-back" href="../../index.html#translations.views.TextToTextTranslation">[docs]</a><span class="k">class</span> <span class="nc">TextToTextTranslation</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">GoogleMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="TextToTextTranslation"><a class="viewcode-back" href="../../index.html#translations.views.TextToTextTranslation">[docs]</a><span class="k">class</span> <span class="nc">TextToTextTranslation</span><span class="p">(</span><span class="n">viewsets</span><span class="o">.</span><span class="n">ViewSet</span><span class="p">,</span> <span class="n">LanguageProcessingMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Text to text translation</span>
 
 <span class="sd">    This view will be used to perform simple text to text translations that</span>
-<span class="sd">    have no requirement to include </span>
+<span class="sd">    have no requirement to include</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">TextToTextSerializer</span>

@@ -24,9 +24,9 @@ Translations views
 .. automodule:: translations.views
    :members:
 
-Translations Google Wrapper
+Translations Utils
 ===========================
-.. automodule:: translations.google_wrapper
+.. automodule:: translations.utils
    :members:
 
 Translations serializers
