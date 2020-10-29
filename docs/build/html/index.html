@@ -71,9 +71,9 @@ Google’s Natural Language service.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>initial_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 4 character ISO 639-1 code to             identify the incoming language</li>
-<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used to             inform Google Translate of the target language</li>
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+<li><strong>initial_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A 4 character ISO 639-1 code to             identify the incoming language</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A ISO 639-1 code that will be used to             inform Google Translate of the target language</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The text that is needed to be translated</li>
 </ul>
 </td>
 </tr>
@@ -122,8 +122,8 @@ translations</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A ISO 639-1 code that will be used             to inform Google Translate of the target language</li>
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A ISO 639-1 code that will be used             to inform Google Translate of the target language</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The text that is needed to be translated</li>
 </ul>
 </td>
 </tr>
@@ -154,28 +154,27 @@ translations</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-translations.google_wrapper">
-<span id="translations-google-wrapper"></span><h1>Translations Google Wrapper<a class="headerlink" href="#module-translations.google_wrapper" title="Permalink to this headline">¶</a></h1>
-<p>The Google wrapper class is a mixin that will be used in all of the endpoints
-relating to the interaction with Google Cloud services.</p>
+<div class="section" id="module-translations.utils">
+<span id="translations-utils"></span><h1>Translations Utils<a class="headerlink" href="#module-translations.utils" title="Permalink to this headline">¶</a></h1>
+<p>This class is a mixin that will be used in all of the endpoints relating to
+the interaction with AWS services.</p>
 <dl class="class">
-<dt id="translations.google_wrapper.GoogleMixin">
-<em class="property">class </em><code class="descclassname">translations.google_wrapper.</code><code class="descname">GoogleMixin</code><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Google Cloud Mixin Class</p>
+<dt id="translations.utils.LanguageProcessingMixin">
+<em class="property">class </em><code class="descclassname">translations.utils.</code><code class="descname">LanguageProcessingMixin</code><a class="reference internal" href="_modules/translations/utils.html#LanguageProcessingMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.utils.LanguageProcessingMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>The language processing mixin</p>
 <p>This mixin will contain all of the necessary functionality required to
-integrate with the relevant Google Cloud services.</p>
-<p>The purpose of this mixin is to provide an interface into the Google Cloud
-API in a single class. An class extending this class will be able to
-upload files to Google Storage, translate text using Cloud Translate,
-convert text to speech and analyze the structure of a piece of text.</p>
+integrate with the relevant services.</p>
+<p>The purpose of this mixin os to provide an into the external services in a
+single class. A class extending this class will be able to translate text
+convert it to speech and provide a breakdown of the text.</p>
 <p class="rubric">Examples</p>
 <dl class="docutils">
 <dt>In order to take advantage of this mixin, simple extended it::</dt>
-<dd>class TranslationEndpoint(viewsets.ViewSet, GoogleMixin):</dd>
+<dd>class TranslationEndpoint(viewsets.ViewSet, LanguageProcessingMixin):</dd>
 </dl>
 <dl class="method">
-<dt id="translations.google_wrapper.GoogleMixin.bundle_full_translation_response">
-<code class="descname">bundle_full_translation_response</code><span class="sig-paren">(</span><em>serializer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.bundle_full_translation_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.bundle_full_translation_response" title="Permalink to this definition">¶</a></dt>
+<dt id="translations.utils.LanguageProcessingMixin.bundle_full_translation_response">
+<code class="descname">bundle_full_translation_response</code><span class="sig-paren">(</span><em>serializer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/utils.html#LanguageProcessingMixin.bundle_full_translation_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.utils.LanguageProcessingMixin.bundle_full_translation_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bundle up the response data for full translations</p>
 <p>Bundle up the information the information coming in from the client
 and transform it into the output that the client is expecting.</p>
@@ -198,8 +197,8 @@ and transform it into the output that the client is expecting.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="translations.google_wrapper.GoogleMixin.bundle_text_translation_response">
-<code class="descname">bundle_text_translation_response</code><span class="sig-paren">(</span><em>serializer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.bundle_text_translation_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.bundle_text_translation_response" title="Permalink to this definition">¶</a></dt>
+<dt id="translations.utils.LanguageProcessingMixin.bundle_text_translation_response">
+<code class="descname">bundle_text_translation_response</code><span class="sig-paren">(</span><em>serializer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/utils.html#LanguageProcessingMixin.bundle_text_translation_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.utils.LanguageProcessingMixin.bundle_text_translation_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bundle up the response data text translations</p>
 <p>Bundle up the information the information coming in from the client
 and transform it into the output that the client is expecting.</p>
@@ -215,99 +214,6 @@ and transform it into the output that the client is expecting.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">TextToTextTranslatedSerializer or errors</p>
 </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="translations.google_wrapper.GoogleMixin.parse_text">
-<code class="descname">parse_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.parse_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.parse_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse the text from the original language to determine what types of
-words the text is comprised of</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text to be analyzed</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The JSON data that is returned from the Natural Language API</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">JSON</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="translations.google_wrapper.GoogleMixin.text_to_speech">
-<code class="descname">text_to_speech</code><span class="sig-paren">(</span><em>text</em>, <em>language_code='en-US'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.text_to_speech"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.text_to_speech" title="Permalink to this definition">¶</a></dt>
-<dd><p>Text to Speech</p>
-<p>Convert the text into an audio file for users to be able to hear
-samples of the text in the intended language.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text to be converted to audio</li>
-<li><strong>language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The full language code for the target language</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The path to the location of the audio file</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">location (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="translations.google_wrapper.GoogleMixin.translate_text">
-<code class="descname">translate_text</code><span class="sig-paren">(</span><em>target_language_code</em>, <em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.translate_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.translate_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Translate Text</p>
-<p>The interface into Google’s Translation API.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>target_language_code</strong> – A ISO 639-1 code that will be used to             inform Google Translate of the target language</li>
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text that is needed to be translated</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The text that was returned by the             Google Translate API</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">translated_text (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>translated_text = self.translate_text(language_code, text)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="translations.google_wrapper.GoogleMixin.upload_to_bucket">
-<code class="descname">upload_to_bucket</code><span class="sig-paren">(</span><em>audio_content</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/google_wrapper.html#GoogleMixin.upload_to_bucket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.google_wrapper.GoogleMixin.upload_to_bucket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload audio to Storage</p>
-<p>Upload audio file to Cloud Storage. Files name don’t need to contain
-any specific information, but do need to be unique so we’ll generate
-a UUID for each new file being created</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>audio_content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string of information that gets returned             from the text to speech API</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The path to the newly generated file</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -341,8 +247,8 @@ than using this class directly</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 2 digit ISO 639-1 code</li>
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The piece of text that is to be translated</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A 2 digit ISO 639-1 code</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The piece of text that is to be translated</li>
 </ul>
 </td>
 </tr>
@@ -374,7 +280,7 @@ than using this class directly</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text returned from Cloud Translate</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The text returned from Cloud Translate</td>
 </tr>
 </tbody>
 </table>
@@ -396,8 +302,8 @@ back from the following services:
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The newly translated text</li>
-<li><strong>audio_location</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The URL to the generated audio file</li>
+<li><strong>translated_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The newly translated text</li>
+<li><strong>audio_location</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The URL to the generated audio file</li>
 <li><strong>analyzed_text</strong> (<em>JSON</em>) – A JSON representation of Google’s analysis</li>
 <li><strong>the text</strong> (<em>of</em>) – </li>
 </ul>
@@ -423,9 +329,9 @@ converting to speech</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>initial_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 4 digit ISO 639-1 code</li>
-<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A 2 digit ISO 639-1 code</li>
-<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The piece of text that is to be translated</li>
+<li><strong>initial_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A 4 digit ISO 639-1 code</li>
+<li><strong>target_language_code</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A 2 digit ISO 639-1 code</li>
+<li><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The piece of text that is to be translated</li>
 </ul>
 </td>
 </tr>
@@ -435,6 +341,15 @@ converting to speech</p>
 <dt id="translations.serializers.FullTranslationSerializer.validate_initial_language_code">
 <code class="descname">validate_initial_language_code</code><span class="sig-paren">(</span><em>initial_language_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslationSerializer.validate_initial_language_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslationSerializer.validate_initial_language_code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate initial language code</p>
+<p>Validate the initial language code to ensure that the string is 2
+digits. If the string is too long or too short then the consumer of
+the API needs to be informed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="translations.serializers.FullTranslationSerializer.validate_initial_language_code_long">
+<code class="descname">validate_initial_language_code_long</code><span class="sig-paren">(</span><em>initial_language_code_long</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/translations/serializers.html#FullTranslationSerializer.validate_initial_language_code_long"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#translations.serializers.FullTranslationSerializer.validate_initial_language_code_long" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate initial language code long</p>
 <p>Validate the initial language code to ensure that the string is 5
 digits. If the string is too long or too short then the consumer of
 the API needs to be informed</p>
@@ -480,7 +395,7 @@ parent.</p>
 <li><a class="reference internal" href="#">Welcome to decypr-translator’s documentation!</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 <li><a class="reference internal" href="#module-translations.views">Translations views</a></li>
-<li><a class="reference internal" href="#module-translations.google_wrapper">Translations Google Wrapper</a></li>
+<li><a class="reference internal" href="#module-translations.utils">Translations Utils</a></li>
 <li><a class="reference internal" href="#module-translations.serializers">Translations serializers</a></li>
 </ul>
 <div class="relations">

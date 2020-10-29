@@ -26,12 +26,13 @@ class BaseInputTranslation(serializers.Serializer):
 
     In the event that the properties of this class are sufficient, it may
     still be better to create a new class that inherits this class, rather
-    than using this class directly 
+    than using this class directly
 
     Args:
         target_language_code (str): A 2 digit ISO 639-1 code
         text (str): The piece of text that is to be translated
     """
+
     target_language_code = serializers.CharField(required=True)
     text = serializers.CharField(required=True)
 
@@ -66,20 +67,35 @@ class FullTranslationSerializer(BaseInputTranslation):
         target_language_code (str): A 2 digit ISO 639-1 code
         text (str): The piece of text that is to be translated
     """
+
     initial_language_code = serializers.CharField(required=True)
+    initial_language_code_long = serializers.CharField(required=True)
 
     def validate_initial_language_code(self, initial_language_code):
         """Validate initial language code
+
+        Validate the initial language code to ensure that the string is 2
+        digits. If the string is too long or too short then the consumer of
+        the API needs to be informed
+        """
+        if len(initial_language_code) <= 1:
+            raise serializers.ValidationError(CODE_MSG.format("short"))
+        elif len(initial_language_code) > 2:
+            raise serializers.ValidationError(CODE_MSG.format("long"))
+        return initial_language_code
+
+    def validate_initial_language_code_long(self, initial_language_code_long):
+        """Validate initial language code long
 
         Validate the initial language code to ensure that the string is 5
         digits. If the string is too long or too short then the consumer of
         the API needs to be informed
         """
-        if len(initial_language_code) <= 3:
+        if len(initial_language_code_long) <= 3:
             raise serializers.ValidationError(CODE_MSG.format("short"))
-        elif len(initial_language_code) > 5:
+        elif len(initial_language_code_long) > 5:
             raise serializers.ValidationError(CODE_MSG.format("long"))
-        return initial_language_code
+        return initial_language_code_long
 
 
 class TextToTextSerializer(BaseInputTranslation):
@@ -91,10 +107,11 @@ class TextToTextSerializer(BaseInputTranslation):
     This serializer will be used solely for straighforward text to text
     translations where the only requirement is to translate the text from the
     initial language to the specified target language.
-    
+
     For this reason, it is enough to use only the fields provided by the
     parent.
     """
+
     pass
 
 
@@ -109,11 +126,12 @@ class BaseOutputSerializer(serializers.Serializer):
 
     In the event that the properties of this class are sufficient, it may
     still be better to create a new class that inherits this class, rather
-    than using this class directly 
+    than using this class directly
 
     Args:
         translated_text (str): The text returned from Cloud Translate
     """
+
     translated_text = serializers.CharField(required=True)
 
 
@@ -135,6 +153,7 @@ class FullTranslatedSerializer(BaseOutputSerializer):
         analyzed_text (JSON): A JSON representation of Google's analysis
         of the text
     """
+
     audio_location = serializers.CharField(required=True)
     analyzed_text = serializers.JSONField()
 
@@ -145,8 +164,9 @@ class TextToTextTranslatedSerializer(BaseOutputSerializer):
     This serializer will be used solely for straighforward text to text
     translations where the only requirement is to return the translated text
     to the client.
-    
+
     For this reason, it is enough to use only the fields provided by the
     parent.
     """
+
     pass

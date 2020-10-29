@@ -11,11 +11,11 @@ and returned back the cosumer that will ultimately be returned to an end user.
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
-from .google_wrapper import GoogleMixin
+from .utils import LanguageProcessingMixin
 from . import serializers
 
 
-class FullTranslator(viewsets.ViewSet, GoogleMixin):
+class FullTranslator(viewsets.ViewSet, LanguageProcessingMixin):
     """
     The translation endpoint that will be used to translate basic text into a
     target specified target language
@@ -62,11 +62,11 @@ class FullTranslator(viewsets.ViewSet, GoogleMixin):
             return Response(serializer.errors)
 
 
-class TextToTextTranslation(viewsets.ViewSet, GoogleMixin):
+class TextToTextTranslation(viewsets.ViewSet, LanguageProcessingMixin):
     """Text to text translation
 
     This view will be used to perform simple text to text translations that
-    have no requirement to include 
+    have no requirement to include
     """
 
     serializer_class = serializers.TextToTextSerializer
