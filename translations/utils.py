@@ -102,8 +102,8 @@ class LanguageProcessingMixin:
         """
         response = self._translator.translate_text(
             Text=text,
-            SourceLanguageCode=new_language,
-            TargetLanguageCode=first_language,
+            SourceLanguageCode=first_language,
+            TargetLanguageCode=new_language,
         )
         return response["TranslatedText"]
 
