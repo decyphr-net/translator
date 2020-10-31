@@ -49,25 +49,6 @@ class BaseInputTranslation(serializers.Serializer):
             raise serializers.ValidationError(CODE_MSG.format("long"))
         return target_language_code
 
-
-class FullTranslationSerializer(BaseInputTranslation):
-    """Full Translation Serializer
-
-    This serializer will be used to deserialize the incoming text and language
-    code that will be sent to the Google Translate API.
-
-    This serializer will be used for the specific purpose of translating text,
-    getting creating an audio representation of the text and a text anaylsis.
-    For this reason, it is necessary to provide the initial language code to
-    inform Google's Text to Speech service which language it will be
-    converting to speech
-
-    Args:
-        initial_language_code (str): A 4 digit ISO 639-1 code
-        target_language_code (str): A 2 digit ISO 639-1 code
-        text (str): The piece of text that is to be translated
-    """
-
     initial_language_code = serializers.CharField(required=True)
     initial_language_code_long = serializers.CharField(required=True)
 
@@ -96,23 +77,6 @@ class FullTranslationSerializer(BaseInputTranslation):
         elif len(initial_language_code_long) > 5:
             raise serializers.ValidationError(CODE_MSG.format("long"))
         return initial_language_code_long
-
-
-class TextToTextSerializer(BaseInputTranslation):
-    """Text To Text Serializer
-
-    This serializer will receive the text that needs to be translated and the
-    language that it needs to be translated to.
-
-    This serializer will be used solely for straighforward text to text
-    translations where the only requirement is to translate the text from the
-    initial language to the specified target language.
-
-    For this reason, it is enough to use only the fields provided by the
-    parent.
-    """
-
-    pass
 
 
 class BaseOutputSerializer(serializers.Serializer):
