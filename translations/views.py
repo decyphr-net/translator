@@ -21,7 +21,7 @@ class FullTranslator(viewsets.ViewSet, LanguageProcessingMixin):
     target specified target language
     """
 
-    serializer_class = serializers.FullTranslationSerializer
+    serializer_class = serializers.BaseInputTranslation
     output_serializer = serializers.FullTranslatedSerializer
 
     def create(self, request):
@@ -69,7 +69,7 @@ class TextToTextTranslation(viewsets.ViewSet, LanguageProcessingMixin):
     have no requirement to include
     """
 
-    serializer_class = serializers.TextToTextSerializer
+    serializer_class = serializers.BaseInputTranslation
     output_serializer = serializers.TextToTextTranslatedSerializer
 
     def create(self, request):
