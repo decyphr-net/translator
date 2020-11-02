@@ -4,13 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Translate</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
 </head>
-<body>
-  <form method="POST" action="" id="form" style="width: 49%;float:left;">
-    {% csrf_token %}
-    <textarea style="width: 100%;height:90vh" name="input">{% if initial_text %}{{ initial_text }}{% endif %}</textarea>
-    <button style="display:block" type="submit">Submit</button>
-  </form>
-  <textarea style="width: 49%;height:90vh" id="results">{% if translated_text %}{{ translated_text }}{% endif %}</textarea>
+<body class="has-background-light">
+  <div class="columns">
+    <div class="column is-5 is-offset-1">
+      <form method="POST" action="" id="form">
+        {% csrf_token %}
+        
+        <textarea class="textarea" name="input">{% if initial_text %}{{ initial_text }}{% endif %}</textarea>
+        <div class="select">
+          <select name="source">
+            <option value="en">English</option>
+            <option value="pt">Portuguese</option>
+          </select>
+        </div>
+        <div class="select">
+          <select name="target">
+            <option value="pt">Portuguese</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <button class="button is-link" type="submit">Translate</button>
+      </form>
+    </div>
+    <div class="column is-5">
+      <textarea class="textarea" id="results">{% if translated_text %}{{ translated_text }}{% endif %}</textarea>
+    </div>
+  </div>
 </body>
 </html>

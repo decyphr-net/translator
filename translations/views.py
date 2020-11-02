@@ -15,7 +15,9 @@ class TranslationView(View, LanguageProcessingMixin):
         data = {
             "initial_text": request.POST.get("input"),
             "translated_text": self._translate_text(
-                request.POST.get("input"), "en", "pt"
+                request.POST.get("input"),
+                request.POST.get("source"),
+                request.POST.get("target"),
             ),
         }
         return render(request, self.template_name, context=data)
