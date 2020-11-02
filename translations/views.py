@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
@@ -12,12 +13,13 @@ class TranslationView(View, LanguageProcessingMixin):
         return render(request, self.template_name)
 
     def post(self, request):
+        json_data = json.loads(request.body)
         data = {
-            "initial_text": request.POST.get("input"),
+            "initial_text": json_data["text"],
             "translated_text": self._translate_text(
-                request.POST.get("input"),
-                request.POST.get("source"),
-                request.POST.get("target"),
+                json_data["text"],
+                json_data["source"],
+                json_data["target"],
             ),
         }
-        return render(request, self.template_name, context=data)
+        return JsonResponse(data)

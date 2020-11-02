@@ -6,32 +6,88 @@
   <title>Translate</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
+  <style type="text/css" media="screen">
+    #form {
+      width:100%;
+      height: 600px;
+      display: block;
+      position: relative;
+    }
+    #editor { 
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 90%;
+    }
+    .options {
+      position: absolute;
+      bottom: 0;
+    }
+</style>
 </head>
 <body class="has-background-light">
   <div class="columns">
     <div class="column is-5 is-offset-1">
-      <form method="POST" action="" id="form">
+      <div id="form">
         {% csrf_token %}
-        
-        <textarea class="textarea" name="input">{% if initial_text %}{{ initial_text }}{% endif %}</textarea>
-        <div class="select">
-          <select name="source">
-            <option value="en">English</option>
-            <option value="pt">Portuguese</option>
-          </select>
+        <div id="editor">Your HTML text here</div>
+        <div class="options">
+          <div class="select">
+            <select name="source">
+              <option value="en">English</option>
+              <option value="pt">Portuguese</option>
+            </select>
+          </div>
+          <div class="select">
+            <select name="target">
+              <option value="pt">Portuguese</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <button class="button is-link" onclick="submit()">Translate</button>
         </div>
-        <div class="select">
-          <select name="target">
-            <option value="pt">Portuguese</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <button class="button is-link" type="submit">Translate</button>
-      </form>
+      </div>
     </div>
     <div class="column is-5">
       <textarea class="textarea" id="results">{% if translated_text %}{{ translated_text }}{% endif %}</textarea>
     </div>
   </div>
+  <script src="https://pagecdn.io/lib/ace/1.4.5/ace.js" integrity="sha256-5Xkhn3k/1rbXB+Q/DX/2RuAtaB4dRRyQvMs83prFjpM=" crossorigin="anonymous"></script>
+  <script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/html");
+
+    document.getElementById("editor").style.fontSize = "22px";
+    document.querySelector(".ace_text-input").name = "input";
+    editor.setShowPrintMargin(false);
+    editor.getSession().setUseWrapMode(true);
+    editor.setOption("indentedSoftWrap", false);
+
+    
+
+    function submit() {
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      let data = {
+        "text": editor.getValue(),
+        "source": document.querySelector("select[name='source']").value,
+        "target": document.querySelector("select[name='target']").value
+      }
+      
+      fetch("/translate", {
+        method: "POST",
+        headers: {'X-CSRFToken': csrftoken},
+        body: JSON.stringify(data)
+      }).then(function(response) {
+        return response.json();
+      }).then(function(data) {
+        document.querySelector("#results").value = data.translated_text
+      });
+
+      
+    }
+  </script>
 </body>
 </html>
