@@ -4,3 +4,4 @@ db.sqlite3
 env_variables.yaml
 cloud_sql_proxy
 .vscode
+translator/.env

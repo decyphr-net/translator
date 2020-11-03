@@ -11,6 +11,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    TRANSLATOR_SECRET_KEY=(str, ""),
+    AWS_ACCESS_KEY_ID=(str, ""),
+    AWS_SECRET_ACCESS_KEY=(str, ""),
+    AWS_REGION=(str, ""),
+    BUCKET_NAME=(str, ""),
+)
+
+environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +32,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("TRANSLATOR_SECRET_KEY")
+SECRET_KEY = env("TRANSLATOR_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", False)
+DEBUG = env("DEBUG", False)
 
-ALLOWED_HOSTS = ["127.0.0.1", "decyphr.uc.r.appspot.com"]
+ALLOWED_HOSTS = ["127.0.0.1", "translatr.decyphr.net"]
 
 
 # Application definition
@@ -122,9 +134,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = "static"
 
-ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-REGION = os.getenv("AWS_REGION")
-BUCKET_NAME = os.getenv("BUCKET_NAME")
+ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+REGION = env("AWS_REGION")
+BUCKET_NAME = env("BUCKET_NAME")
 
 POLLY_CONFIG = {"engine": "standard", "output_format": "mp3", "text_type": "text"}
