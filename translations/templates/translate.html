@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,26 +7,7 @@
   <title>Translate</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
-  <style type="text/css" media="screen">
-    .editor-container {
-      width:100%;
-      height: 600px;
-      display: block;
-      position: relative;
-    }
-    .editor { 
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 90%;
-    }
-    .options {
-      position: absolute;
-      bottom: 0;
-    }
-</style>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 </head>
 <body class="has-background-light">
   <div class="columns">
@@ -57,47 +39,6 @@
     </div>
   </div>
   <script src="https://pagecdn.io/lib/ace/1.4.5/ace.js" integrity="sha256-5Xkhn3k/1rbXB+Q/DX/2RuAtaB4dRRyQvMs83prFjpM=" crossorigin="anonymous"></script>
-  <script>
-    const inputEditor = ace.edit("source-language-editor");
-    inputEditor.setTheme("ace/theme/monokai");
-    inputEditor.session.setMode("ace/mode/html");
-
-    document.getElementById("source-language-editor").style.fontSize = "22px";
-    document.getElementById("source-language-editor").querySelector(".ace_text-input").name = "input";
-    inputEditor.setShowPrintMargin(false);
-    inputEditor.getSession().setUseWrapMode(true);
-    inputEditor.setOption("indentedSoftWrap", false);
-
-    const outputEditor = ace.edit("target-language-editor");
-    outputEditor.setTheme("ace/theme/monokai");
-    outputEditor.session.setMode("ace/mode/html");
-
-    document.getElementById("target-language-editor").style.fontSize = "22px";
-    outputEditor.setShowPrintMargin(false);
-    outputEditor.getSession().setUseWrapMode(true);
-    outputEditor.setOption("indentedSoftWrap", false);
-
-    function submit() {
-      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      let data = {
-        "text": inputEditor.getValue(),
-        "source": document.querySelector("select[name='source']").value,
-        "target": document.querySelector("select[name='target']").value
-      }
-      
-      fetch("/translate", {
-        method: "POST",
-        headers: {'X-CSRFToken': csrftoken},
-        body: JSON.stringify(data)
-      }).then(function(response) {
-        return response.json();
-      }).then(function(data) {
-        console.log(data.translated_text)
-        outputEditor.setValue(data.translated_text, -1)
-      });
-
-      
-    }
-  </script>
+  <script src="{% static 'js/editor.js' %}"></script>
 </body>
 </html>

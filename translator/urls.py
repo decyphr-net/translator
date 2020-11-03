@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework import routers
 from translations import api, views
 
@@ -27,4 +29,4 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("translate", views.TranslationView.as_view()),
     path("api/v1/", include(router.urls)),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
