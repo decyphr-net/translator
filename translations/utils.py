@@ -2,6 +2,7 @@
 This class is a mixin that will be used in all of the endpoints relating to
 the interaction with AWS services.
 """
+import re
 import boto3
 from django.conf import settings
 
@@ -45,6 +46,28 @@ class LanguageProcessingMixin:
         aws_access_key_id=_access_key,
         aws_secret_access_key=_secret_key,
     )
+
+    SKIP_TOKEN = "~"
+
+    def _text_to_skip(self, text):
+        """Find text that will be skipped
+
+        Find any skip tokens within the text to determine if any of the content
+        should be skipped
+
+        Args:
+            text (str): The text that will searched
+
+        Returns:
+            str: The text that is going to be skipped
+        """
+        return text[
+            text.find(self.SKIP_TOKEN)
+            + len(self.SKIP_TOKEN) : text.rfind(self.SKIP_TOKEN)
+        ]
+
+    def _parse_text(self, text):
+        """"""
 
     def _get_text_analysis(self, text, language):
         """Analyse text
@@ -100,12 +123,20 @@ class LanguageProcessingMixin:
         Returns:
             The translated text (str)
         """
+
+        skipped_text = self._text_to_skip(text)
         response = self._translator.translate_text(
             Text=text,
             SourceLanguageCode=first_language,
             TargetLanguageCode=new_language,
         )
-        return response["TranslatedText"]
+        finalised_text = re.sub(
+            "~.*?~",
+            skipped_text,
+            response["TranslatedText"],
+            flags=re.DOTALL,
+        )
+        return finalised_text
 
     def bundle_full_translation_response(self, serializer):
         """Bundle up the response data for full translations

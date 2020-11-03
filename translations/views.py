@@ -14,12 +14,15 @@ class TranslationView(View, LanguageProcessingMixin):
 
     def post(self, request):
         json_data = json.loads(request.body)
+
+        translated_text = self._translate_text(
+            json_data["text"],
+            json_data["source"],
+            json_data["target"],
+        )
+
         data = {
             "initial_text": json_data["text"],
-            "translated_text": self._translate_text(
-                json_data["text"],
-                json_data["source"],
-                json_data["target"],
-            ),
+            "translated_text": translated_text,
         }
         return JsonResponse(data)
