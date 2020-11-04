@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Translate Your Text</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}" />
+
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+
+  <body>
+    <section class="hero is-success is-fullheight">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title has-text-white is-size-1">Translatr</h1>
+          <h2 class="subtitle is-size-4">
+            Translate text into any language
+          </h2>
+    
+          <a class="button is-link is-medium" href="/translate">
+            Let's go!
+          </a>
+    
+        </div>
+        
+      </div>
+    </section>
+  </body>
+  <script>
+    document.getElementById("nav-toggle").onclick = function () {
+      document.getElementById("nav-content").classList.toggle("hidden");
+    };
+  </script>
+  {% block extra_js %} {% endblock %}
+</html>

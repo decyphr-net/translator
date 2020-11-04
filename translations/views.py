@@ -6,6 +6,13 @@ from django.http import JsonResponse
 from .utils import LanguageProcessingMixin
 
 
+class HomeView(View):
+    template_name = "index.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
 class TranslationView(View, LanguageProcessingMixin):
     template_name = "translate.html"
 

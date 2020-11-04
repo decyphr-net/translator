@@ -26,6 +26,7 @@ router.register(r"full-translation", api.FullTranslator, basename="translator")
 router.register(r"text-to-text", api.TextToTextTranslation, basename="text-to-text")
 
 urlpatterns = [
+    path("", views.HomeView.as_view()),
     path("admin/", admin.site.urls),
     path("translate", views.TranslationView.as_view()),
     path("api/v1/", include(router.urls)),
